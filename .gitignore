@@ -2,3 +2,6 @@ venv_vision/
 
 __pycache__/
 *.py[cod]
+exp/helperFunc/pytorch_lighting/data/cifar-10-python.tar.gz
+exp/helperFunc/pytorch_lighting/data/cifar-10-batches-py/
+exp/helperFunc/pytorch_lighting/lightning_logs/version_2/checkpoints/epoch=4-step=7815.ckpt
