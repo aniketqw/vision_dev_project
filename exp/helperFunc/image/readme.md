@@ -48,8 +48,36 @@ sudo nice -n -10 env HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
 --gpu-memory-utilization 0.3 \
 --max-model-len 4096 \
 --port 8000
+ * or this
+sudo renice -n 15 -p 271230
+python3 -m vllm.entrypoints.openai.api_server \
+--model Qwen/Qwen2.5-VL-7B-Instruct \
+--quantization bitsandbytes \
+--gpu-memory-utilization 0.2 \
+--max-model-len 1024 \
+--max-num-seqs 1 \
+--port 8000
+
+
+* or this we need to use the more stable V0 engine and disable CUDA Graphs (which take up ~2-3GB of VRAM just for speed optimization)
+
+(venv_vision) pratik2@rtx3090:~/vision_dev_project$ VLLM_USE_V1=0 env HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
+python3 -m vllm.entrypoints.openai.api_server \
+--model Qwen/Qwen2.5-VL-7B-Instruct \
+--quantization bitsandbytes \
+--gpu-memory-utilization 0.4 \
+--max-model-len 2048 \
+--enforce-eager \
+--port 8000
+
 
 ### for git 
+
+git config --local user.name "aniketqw"
+git config --local user.email "38223792+aniketqw@users.noreply.github.com"
+* for 1 hour window we can push and pull without credential for 1hour
+git config --local credential.helper 'cache --timeout=3600'
+
 This dubious ownership error is a security feature of Git. It happens because you moved the project to /mnt/data/ (likely using sudo), which changed the owner of the files or the path to a location Git doesn't "trust" by default.
 
 Since you are the owner of the project and this is your local machine, you just need to tell Git that this specific directory is safe.
