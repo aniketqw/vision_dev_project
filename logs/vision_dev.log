@@ -16,3 +16,66 @@
 2026-01-17 16:38:55,528 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:50) - Invoking vision chain...
 2026-01-17 16:38:55,589 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.474048 seconds
 2026-01-17 16:38:56,075 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.969368 seconds
+2026-01-17 16:48:05,954 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:19) - Absolute image path located: /mnt/data/vision_dev_project/exp/helperFunc/image/image.jpeg
+2026-01-17 16:48:05,976 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:21) - base 64 string : /9j/4AAQSk
+2026-01-17 16:48:11,244 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:50) - Invoking vision chain...
+2026-01-17 16:48:44,961 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-17 16:49:29,472 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:19) - Absolute image path located: /mnt/data/vision_dev_project/exp/helperFunc/image/image.jpeg
+2026-01-17 16:49:29,473 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:21) - base 64 string : /9j/4AAQSk
+2026-01-17 16:49:29,736 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:50) - Invoking vision chain...
+2026-01-17 16:49:59,349 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-17 16:50:47,779 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:19) - Absolute image path located: /mnt/data/vision_dev_project/exp/helperFunc/image/image.jpeg
+2026-01-17 16:50:47,779 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:21) - base 64 string : /9j/4AAQSk
+2026-01-17 16:50:48,017 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:50) - Invoking vision chain...
+2026-01-17 16:51:10,068 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-17 16:53:08,911 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:19) - Absolute image path located: /mnt/data/vision_dev_project/exp/helperFunc/image/image.jpeg
+2026-01-17 16:53:08,911 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:21) - base 64 string : /9j/4AAQSk
+2026-01-17 16:53:09,159 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:50) - Invoking vision chain...
+2026-01-17 16:53:29,118 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-17 16:53:29,131 - [INFO] - VisionDev - (exp/helperFunc/image/test.py:57) - The image you've provided appears to be a photograph of a person with curly hair, wearing a white shirt. The issue described in the question pertains to an "Image Segmentation Boundary Leak," which typically occurs when the segmentation model fails to correctly identify and separate the boundaries between different objects or regions in the image.
+
+### Analysis:
+1. **Boundary Leak**: This refers to the situation where the segmentation model incorrectly includes parts of one object into another object's boundary. For example, if the model is supposed to segment the hair from the background but instead includes some of the background into the hair region, it would be considered a boundary leak.
+
+2. **Improvement Suggestions**:
+   - **Focal Loss**: Focal Loss is a loss function that focuses on hard examples (examples that are difficult to classify) by down-weighting easy examples. This can help the model pay more attention to the boundaries where the classes are more ambiguous, potentially reducing the boundary leak.
+   
+   ```python
+   # Example usage of Focal Loss in PyTorch
+   import torch
+   import torch.nn as nn
+   
+   def focal_loss(input_tensor, target_tensor, alpha=0.25, gamma=2):
+       BCE_loss = nn.functional.binary_cross_entropy_with_logits(input_tensor, target_tensor)
+       pt = torch.exp(-BCE_loss)
+       F_loss = alpha * (1-pt)**gamma * BCE_loss
+       return F_loss
+   ```
+
+   - **Atrous Spatial Pyramid Pooling (ASPP)**: ASPP is a type of convolutional neural network architecture that uses atrous convolutions to capture spatial context at multiple scales. This can be particularly useful for tasks like semantic segmentation where capturing detailed spatial information is crucial.
+
+   ```python
+   import tensorflow as tf
+   from tensorflow.keras.layers import Conv2D, MaxPooling2D, concatenate
+   
+   def build_aspp(inputs, num_filters=256):
+       # Atrous convolutions with different dilation rates
+       conv1x1 = Conv2D(num_filters, kernel_size=(1, 1), padding='same')(inputs)
+       conv3x3_1 = Conv2D(num_filters, kernel_size=(3, 3), padding='same', dilation_rate=(1, 1))(inputs)
+       conv3x3_2 = Conv2D(num_filters, kernel_size=(3, 3), padding='same', dilation_rate=(2, 2))(inputs)
+       conv3x3_3 = Conv2D(num_filters, kernel_size=(3, 3), padding='same', dilation_rate=(3, 3))(inputs)
+       conv3x3_4 = Conv2D(num_filters, kernel_size=(3, 3), padding='same', dilation_rate=(4, 4))(inputs)
+       
+       # Concatenate all the outputs
+       x = concatenate([conv1x1, conv3x3_1, conv3x3_2, conv3x3_3, conv3x3_4])
+       x = Conv2D(num_filters, kernel_size=(1, 1), padding='same')(x)
+       x = MaxPooling2D(pool_size=(1, 1), strides=(1, 1))(x)
+       return x
+   ```
+
+### Implementation Steps:
+1. **Data Preparation**: Ensure your dataset is properly labeled and augmented to handle edge cases effectively.
+2. **Model Selection**: Choose a model architecture that supports these improvements, such as a U-Net with ASPP or a ResNet with Focal Loss.
+3. **Training**: Train your model using appropriate loss functions and regularization techniques to mitigate overfitting and improve generalization.
+
+By applying these strategies, you should be able to reduce the boundary leak issue in your image segmentation task.

@@ -53,12 +53,13 @@ def llm_call(img_path):
         "rag_recipe": "Use Focal Loss or Atrous Spatial Pyramid Pooling to improve edge detection.",
         "image_data": imgb64
     })
-
+    print(output)
+    logger.info(f"{output}")
 
 def main():
     img_path=os.path.join(dir_name,"image.jpeg")
     llm_call(img_path)
-    test_pipeline()
+    
 if __name__ =="__main__":
     main()
 
