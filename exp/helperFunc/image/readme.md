@@ -167,3 +167,4 @@ git config --global --add safe.directory /mnt/data/vision_dev_project
 - ✔ Reproducible and clean setup
 
 ---
+python3 -m exp.helperFunc.image.image_test
