@@ -4,8 +4,8 @@ import requests
 import glob
 from datetime import datetime
 from logger_setup import logger
+
 # --- CONFIGURATION ---
-# Based on your project structure: ~/vision_dev_project/exp/helperFunc/logs
 LOG_DIR = "exp/helperFunc/logs" 
 REPORT_OUTPUT_DIR = "/home/pratik2/vision_dev_project/exp/helperFunc/training_analytics/data/vision_dev_reports"
 VLLM_URL = "http://localhost:8000/v1/chat/completions"
@@ -17,7 +17,6 @@ def get_latest_log():
     list_of_files = glob.glob(f'{LOG_DIR}/*.json')
     if not list_of_files:
         return None
-    # Returns the most recently created file
     return max(list_of_files, key=os.path.getctime)
 
 def generate():
@@ -34,24 +33,21 @@ def generate():
     summary = data.get("summary", {})
     report_content = []
 
-    # Limit to top 10 samples to manage token limits and time
     for i, sample in enumerate(samples[:10]):
-        # FIX: Changed key from 'image' to 'image_base64' to match your JSON
         img_data = sample.get('image_base64')
         if not img_data:
             logger.info(f"⚠️ Sample {i} missing image data. Skipping.")
             continue
 
-        prompt = f"""
-        Analyze this Machine Learning classification failure:
-        - True Label (GT): {sample['true_label']}
-        - Predicted Label: {sample['predicted_label']}
-        - Training Epoch: {sample.get('epoch', 'N/A')}
-        - Final Validation Loss: {summary.get('final_val_loss', 'N/A')}
-        
-        Task: Look at the visual features of the provided image. Provide a concise technical 
-        reason why the model confused class {sample['true_label']} for class {sample['predicted_label']}.
-        """
+        # FIX: Added <|image|> token. This is MANDATORY for Molmo to process visual data.
+        # We also updated the prompt to be more direct about visual evidence.
+        prompt = (
+            f"<|image|>\n"
+            f"This is a Machine Learning classification failure. "
+            f"Ground Truth: {sample['true_label']}, Prediction: {sample['predicted_label']}. "
+            f"Analyze the specific visual features (textures, shapes, or lighting) in this image. "
+            f"Why did the model confuse these two classes? Give a concise, evidence-based reason."
+        )
 
         payload = {
             "model": MODEL_NAME,
@@ -65,8 +61,8 @@ def generate():
                     }
                 ]
             }],
-            "temperature": 0.2,
-            "max_tokens": 300
+            "temperature": 0.1, # Lowered for strictly factual analysis
+            "max_tokens": 350
         }
 
         try:
@@ -85,7 +81,6 @@ def generate():
         except Exception as e:
             logger.info(f"❌ Error analyzing sample {i}: {e}")
 
-    # Save the final analysis
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     out_file = os.path.join(REPORT_OUTPUT_DIR, f"molmo_analysis_{timestamp}.txt")
     
