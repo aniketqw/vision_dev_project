@@ -3,9 +3,11 @@ import os
 import sys
 from logging.handlers import RotatingFileHandler
 
+# Define the project root directory
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 class CustomFormatter(logging.Formatter):
-    """Adds color and file path information to terminal logs."""
+    """Adds color and RELATIVE file path information to terminal logs."""
     
     # ANSI Color Codes
     grey = "\x1b[38;20m"
@@ -15,8 +17,8 @@ class CustomFormatter(logging.Formatter):
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
     
-    # The format including the filename and line number
-    format_str = "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s:%(lineno)d) - %(message)s"
+    # Use 'relpath' which we will calculate in the format method
+    format_str = "%(asctime)s - [%(levelname)s] - %(name)s - (%(relpath)s:%(lineno)d) - %(message)s"
 
     FORMATS = {
         logging.DEBUG: grey + format_str + reset,
@@ -27,6 +29,9 @@ class CustomFormatter(logging.Formatter):
     }
 
     def format(self, record):
+        # Calculate path relative to vision_dev_project
+        record.relpath = os.path.relpath(record.pathname, PROJECT_ROOT)
+        
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
@@ -34,18 +39,24 @@ class CustomFormatter(logging.Formatter):
 
 def setup_global_logging():
     # Ensure logs directory exists in the root
-    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+    log_dir = os.path.join(PROJECT_ROOT, "logs")
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, "vision_dev.log")
 
-    # Configure Rotating File Handler (prevents file from getting too large)
-    # Max size 5MB, keeps 5 backup files
+    # Configure Rotating File Handler
     file_handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=5)
     stream_handler = logging.StreamHandler(sys.stdout)
 
     # 2. Create formatters
-    # Plain text for the file
-    file_formatter = logging.Formatter("%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s:%(lineno)d) - %(message)s")
+    # Note: We use a custom function for the file formatter as well 
+    # so that the .log file also has relative paths
+    class FileRelPathFormatter(logging.Formatter):
+        def format(self, record):
+            record.relpath = os.path.relpath(record.pathname, PROJECT_ROOT)
+            return super().format(record)
+
+    file_formatter = FileRelPathFormatter("%(asctime)s - [%(levelname)s] - %(name)s - (%(relpath)s:%(lineno)d) - %(message)s")
+    
     # Colored for the terminal
     color_formatter = CustomFormatter()
 
