@@ -79,7 +79,7 @@ The system now behaves as if the project is in `$HOME`, but it is physically sto
 ---
 
 ## 🔹 Step 4: Launch vLLM Using the Big Drive
-
+Best at tiny pixel details (OCR/edges). 
 ⚠️ **`sudo` resets environment variables. Pass the cache path explicitly.**
 
 **Recommended (Stable):**
@@ -113,7 +113,7 @@ python3 -m vllm.entrypoints.openai.api_server \
 ## 🔹 Most Stable Configuration (Disable CUDA Graphs)
 
 Uses vLLM V0 engine and eager execution to save ~2–3GB VRAM.
-
+AT 4 BIT QWEN TAKES 5.8GB
 ```bash
 VLLM_USE_V1=0 env HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
 python3 -m vllm.entrypoints.openai.api_server \
@@ -126,7 +126,89 @@ python3 -m vllm.entrypoints.openai.api_server \
 ```
 
 ---
+## 🔹 USING SIMILARLY FOR DEEPSEEK 
 
+Uses vLLM V0 engine and eager execution to save ~2–3GB VRAM.
+
+```bash
+# 1. Kill current Qwen server
+sudo pkill -f vllm
+
+# 2. Start DeepSeek-VL2
+# VLLM_USE_V1=0 env HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
+# python3 -m vllm.entrypoints.openai.api_server \
+# --model deepseek-ai/deepseek-vl2-small \
+# --quantization bitsandbytes \
+# --gpu-memory-utilization 0.3 \
+# --max-model-len 2048 \
+# --enforce-eager \
+# --port 8000 \
+# --hf-overrides '{"architectures": ["DeepseekV2ForCausalLM"]}'
+# CANNOT USE IT HF OVERRIDE LET THE MODEL TRUST THE HOST
+VLLM_USE_V1=0  HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
+python3 -m vllm.entrypoints.openai.api_server \
+--model deepseek-ai/deepseek-vl2-small \
+--trust-remote-code \
+--quantization bitsandbytes \
+--gpu-memory-utilization 0.2 \
+--max-model-len 2048 \
+--enforce-eager \
+--port 8000
+```
+
+---
+## 🔹 USING SIMILARLY FOR MOLMO 7B
+
+Uses vLLM V0 engine and eager execution to save ~2–3GB VRAM.
+Extremely high reasoning for its size.
+~5.5 GB AT 4BIT (working)
+```bash
+sudo pkill -f vllm
+pip install tensorflow
+# 2. Start Molmo with V0 engine and lower memory utilization
+VLLM_USE_V1=0 env HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
+python3 -m vllm.entrypoints.openai.api_server \
+--model allenai/Molmo-7B-D-0924 \
+--trust-remote-code \
+--quantization bitsandbytes \
+--gpu-memory-utilization 0.4 \
+--max-model-len 2048 \
+--enforce-eager \
+--port 8000
+```
+If you have enough CPU RAM, you can enable memory-mapped loading:
+```bash
+python3 -m vllm.entrypoints.openai.api_server \
+--model allenai/Molmo-7B-D-0924 \
+--load-format "auto" \
+--disable-custom-all-reduce \
+--gpu-memory-utilization 0.9 \
+--max-model-len 2048
+```
+
+
+
+---
+## 🔹 USING SIMILARLY FOR PIXTRAL
+
+Uses vLLM V0 engine and eager execution to save ~2–3GB VRAM.
+Native handling of different image sizes.
+~7.5 GB AT 4BIT
+```bash
+sudo pkill -f vllm
+
+VLLM_USE_V1=0 env HUGGINGFACE_HUB_CACHE="/mnt/data/pratik_models" \
+python3 -m vllm.entrypoints.openai.api_server \
+--model mistralai/Pixtral-12B-2409 \
+--tokenizer_mode mistral \
+--quantization bitsandbytes \
+--gpu-memory-utilization 0.3 \
+--max-model-len 2048 \
+--enforce-eager \
+--port 8000
+```
+
+---
 ## 🔹 Git Configuration
 
 **Set repository identity:**
