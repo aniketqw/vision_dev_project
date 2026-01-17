@@ -5,3 +5,4 @@ __pycache__/
 exp/helperFunc/pytorch_lighting/data/cifar-10-python.tar.gz
 exp/helperFunc/pytorch_lighting/data/cifar-10-batches-py/
 exp/helperFunc/pytorch_lighting/lightning_logs/version_1/checkpoints/epoch=0-step=1563.ckpt
+exp/helperFunc/pytorch_lighting/lightning_logs/version_2/checkpoints/epoch=1-step=3126.ckpt
