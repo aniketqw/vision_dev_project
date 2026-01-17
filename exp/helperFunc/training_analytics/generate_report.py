@@ -29,8 +29,13 @@ def generate():
     with open(latest_log, 'r') as f:
         data = json.load(f)
 
-    samples = data.get("misclassified_samples", [])
+    # --- RUNTIME DATASET DISCOVERY ---
     summary = data.get("summary", {})
+    dataset_info = summary.get("dataset_info", {})
+    classes = dataset_info.get("classes", {})
+    resolution = dataset_info.get("resolution", "32x32")
+    
+    samples = data.get("misclassified_samples", [])
     report_content = []
 
     for i, sample in enumerate(samples[:10]):
@@ -39,14 +44,23 @@ def generate():
             logger.info(f"⚠️ Sample {i} missing image data. Skipping.")
             continue
 
-        # FIX: Added <|image|> token. This is MANDATORY for Molmo to process visual data.
-        # We also updated the prompt to be more direct about visual evidence.
+        # Resolve labels to names using discovered metadata
+        true_idx = str(sample['true_label'])
+        pred_idx = str(sample['predicted_label'])
+        true_name = classes.get(true_idx, f"Class {true_idx}")
+        pred_name = classes.get(pred_idx, f"Class {pred_idx}")
+
+        # The prompt is now fully dynamic and dataset-aware
         prompt = (
             f"<|image|>\n"
-            f"This is a Machine Learning classification failure. "
-            f"Ground Truth: {sample['true_label']}, Prediction: {sample['predicted_label']}. "
-            f"Analyze the specific visual features (textures, shapes, or lighting) in this image. "
-            f"Why did the model confuse these two classes? Give a concise, evidence-based reason."
+            f"You are a Senior AI Diagnostic tool analyzing {resolution} image classification failures.\n\n"
+            f"CONTEXT:\n"
+            f"- Ground Truth: {true_name} (Label {true_idx})\n"
+            f"- Prediction: {pred_name} (Label {pred_idx})\n\n"
+            f"TASK:\n"
+            f"Analyze the visual features in this {resolution} image. Why did the model confuse "
+            f"the '{true_name}' for a '{pred_name}'? Focus on pixel-level evidence like "
+            f"silhouettes, color blobs, or background noise that might cause confusion at this low resolution."
         )
 
         payload = {
@@ -61,31 +75,34 @@ def generate():
                     }
                 ]
             }],
-            "temperature": 0.1, # Lowered for strictly factual analysis
+            "temperature": 0.1,
             "max_tokens": 350
         }
 
         try:
-            logger.info(f"🔄 Processing Sample {i+1}/{len(samples[:10])}...")
+            logger.info(f"🔄 Processing Sample {i+1} ({true_name} vs {pred_name})...")
             res = requests.post(VLLM_URL, json=payload, timeout=90)
             res.raise_for_status()
             
             reasoning = res.json()['choices'][0]['message']['content']
             
             report_content.append(f"=== FAILURE CASE {i+1} ===\n")
-            report_content.append(f"GROUND TRUTH: {sample['true_label']}\n")
-            report_content.append(f"PREDICTED:    {sample['predicted_label']}\n")
+            report_content.append(f"GROUND TRUTH: {true_name} ({true_idx})\n")
+            report_content.append(f"PREDICTED:    {pred_name} ({pred_idx})\n")
             report_content.append(f"AI DIAGNOSIS: {reasoning}\n")
             report_content.append("-" * 30 + "\n\n")
             
         except Exception as e:
             logger.info(f"❌ Error analyzing sample {i}: {e}")
 
+    # Save output
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    out_file = os.path.join(REPORT_OUTPUT_DIR, f"molmo_analysis_{timestamp}.txt")
+    out_file = os.path.join(REPORT_OUTPUT_DIR, f"ai_reasoning_{timestamp}.txt")
     
     with open(out_file, 'w') as f:
-        f.write(f"VISION-DEV AI REASONING REPORT\nGenerated: {datetime.now()}\n")
+        f.write(f"VISION-DEV AI REASONING REPORT\n")
+        f.write(f"Source Log: {os.path.basename(latest_log)}\n")
+        f.write(f"Generated: {datetime.now()}\n")
         f.write("=" * 40 + "\n\n")
         f.write("".join(report_content))
     

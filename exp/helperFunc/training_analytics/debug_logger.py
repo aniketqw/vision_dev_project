@@ -53,6 +53,9 @@ class DebugLogger(pl.Callback):
         self.save_dir = save_dir
         os.makedirs(save_dir, exist_ok=True)
         
+        #dataset metadata
+        self.metadata = {}
+        self.summary = {}
         # Epoch level metrics
         self.metrics = []
         self.all_predictions = []
@@ -80,7 +83,25 @@ class DebugLogger(pl.Callback):
         
         # Correct predictions per epoch
         self.correct_predictions_per_epoch = []
-
+    def on_train_start(self, trainer, pl_module):
+        # 1. Programmatically get class names from the dataloader
+        # This works for CIFAR10, ImageNet, or any standard FolderDataset
+        train_dataloader = trainer.train_dataloader
+        dataset = train_dataloader.dataset
+        
+        if hasattr(dataset, 'classes'):
+            self.metadata['classes'] = {i: name for i, name in enumerate(dataset.classes)}
+        
+        # 2. Get image resolution from a sample batch
+        try:
+            sample_batch = next(iter(train_dataloader))
+            images, _ = sample_batch
+            self.metadata['resolution'] = f"{images.shape[2]}x{images.shape[3]}"
+        except Exception:
+            self.metadata['resolution'] = "Unknown"
+        
+        # 3. Save to the summary section of your JSON
+        self.summary['dataset_info'] = self.metadata
     def on_train_epoch_start(self, trainer, pl_module):
         """Record epoch start time"""
         self.epoch_start_time = time.time()
@@ -222,6 +243,8 @@ class DebugLogger(pl.Callback):
         # Combine all data
         all_data = {
             'summary': {
+                # Merge the dataset_info (classes, resolution) captured at runtime
+                **self.summary,
                 'timestamp': timestamp,
                 'total_epochs': len(self.metrics),
                 'best_accuracy': max([m['accuracy'] for m in self.metrics]) if self.metrics else 0,
@@ -248,6 +271,11 @@ class DebugLogger(pl.Callback):
             json.dump(all_data, f, indent=2)
         
         print(f"\n✓ Training log saved to: {output_file}")
+        
+        # Log dataset info for verification
+        dataset_info = all_data['summary'].get('dataset_info', {})
+        print(f"📊 Dataset Info: {dataset_info.get('resolution')} resolution, {len(dataset_info.get('classes', {}))} classes")
+        
         print(f"\n📊 Final Summary:")
         print(f"  • Total Epochs: {all_data['summary']['total_epochs']}")
         print(f"  • Best Accuracy: {all_data['summary']['best_accuracy']:.4f} (Epoch {all_data['summary']['best_epoch']})")
