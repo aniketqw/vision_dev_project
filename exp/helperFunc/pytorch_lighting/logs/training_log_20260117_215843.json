@@ -1,0 +1,26 @@
+{
+  "summary": {
+    "timestamp": "20260117_215843",
+    "total_epochs": 2,
+    "best_accuracy": 0.6743000149726868,
+    "best_epoch": 1,
+    "final_train_loss": 0.7304468750953674,
+    "final_val_loss": 0.9381073117256165
+  },
+  "epochs": [
+    {
+      "epoch": 0,
+      "train_loss": 1.0459380149841309,
+      "val_loss": 1.113404393196106,
+      "accuracy": 0.6004999876022339,
+      "num_misclassified": 315
+    },
+    {
+      "epoch": 1,
+      "train_loss": 0.7304468750953674,
+      "val_loss": 0.9381073117256165,
+      "accuracy": 0.6743000149726868,
+      "num_misclassified": 313
+    }
+  ]
+}
