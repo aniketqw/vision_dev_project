@@ -72,7 +72,7 @@ python3 -m exp.helperFunc.training_analytics.generate_report
 ✅ Report saved to /mnt/data/vision_dev_reports/ai_analysis_230500.txt
 ```
 
-## 📋 Report Content Example
+## 📋 Report Content Example(TO UPDATE)
 
 The generated report contains AI analysis of model failures:
 
@@ -123,7 +123,7 @@ REPORT_OUTPUT_DIR = "/mnt/data/vision_dev_reports"  # Change output location
 VLLM_URL = "http://localhost:8000/v1/chat/completions"  # Change if different port
 ```
 
-## 📊 JSON Log Structure
+## 📊 JSON Log Structure(TO UPDATE)
 
 The DebugLogger creates structured JSON files with:
 ```json
