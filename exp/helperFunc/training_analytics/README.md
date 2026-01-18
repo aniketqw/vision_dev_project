@@ -42,7 +42,7 @@ python3 -m vllm.entrypoints.openai.api_server \
   --model allenai/Molmo-7B-D-0924 \
   --trust-remote-code \
   --quantization bitsandbytes \
-  --gpu-memory-utilization 0.35 \
+  --gpu-memory-utilization 0.4 \
   --max-model-len 2048 \
   --enforce-eager \
   --port 8000
