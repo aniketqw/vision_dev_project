@@ -19,6 +19,8 @@ venv*/
 /pipe/logs/*
 !/pipe/logs/*.json
 !/pipe/logs/*.png
+!/pipe/logs/*_images/
+!/pipe/logs/*_images/**
 
 # Intermediate outputs
 /pipe/checkpoints/
