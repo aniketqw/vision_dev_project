@@ -250,6 +250,42 @@ def gather_images_for_distortion(
     return collected
 
 
+# ── VLM server readiness ──────────────────────────────────────────────────────
+
+def wait_for_server(port: int, timeout: int = 300, poll_interval: int = 5) -> bool:
+    """
+    Poll http://localhost:{port}/health until it returns 200 or timeout expires.
+    Prints a live countdown so the user knows the server is still loading.
+    Returns True if server became ready, False if timed out.
+    """
+    import urllib.request
+    import urllib.error
+    import time
+
+    url = f"http://localhost:{port}/health"
+    deadline = time.time() + timeout
+    attempt = 0
+
+    print(f"\n⏳ Waiting for vLLM server on port {port} (timeout={timeout}s)…")
+    while time.time() < deadline:
+        attempt += 1
+        try:
+            with urllib.request.urlopen(url, timeout=3) as resp:
+                if resp.status == 200:
+                    print(f"✅ Server ready (after ~{attempt * poll_interval}s)\n")
+                    logger.info("vLLM server is ready.")
+                    return True
+        except Exception:
+            remaining = int(deadline - time.time())
+            print(f"   not ready yet — retrying in {poll_interval}s "
+                  f"(~{remaining}s remaining) …", end="\r", flush=True)
+            time.sleep(poll_interval)
+
+    print(f"\n❌ Server did not become ready within {timeout}s.")
+    logger.error("vLLM server readiness timeout.")
+    return False
+
+
 # ── VLM analysis ──────────────────────────────────────────────────────────────
 
 _VLM_PROMPT_TEXT = """\
@@ -761,8 +797,13 @@ def main():
     # ── 3. Build VLM chain (unless --no-vlm) ──────────────────────────────────
     chain = None
     if not args.no_vlm:
-        logger.info(f"Building VLM chain → http://localhost:{args.port}/v1  model={args.model}")
-        chain = build_vlm_chain(args.model, args.port)
+        ready = wait_for_server(args.port, timeout=300, poll_interval=5)
+        if not ready:
+            print("⚠️  Continuing without VLM — all image analyses will be skipped.")
+            print("   Start the vLLM server first and re-run, or use --no-vlm for stats only.\n")
+        else:
+            logger.info(f"Building VLM chain → http://localhost:{args.port}/v1  model={args.model}")
+            chain = build_vlm_chain(args.model, args.port)
 
     # ── 4. Per-distortion image analysis ──────────────────────────────────────
     per_type_analyses: Dict[str, List[Dict]] = {}

@@ -55,17 +55,30 @@ It produces:
 
 Reads training logs + misclassified images, sends representative images to a
 locally-hosted **Qwen2.5-VL-7B-Instruct** vision-language model, and writes a
-structured Markdown reasoning report (`ai_reasoning_summary.md`).
+deep structured Markdown reasoning report (`ai_reasoning_summary.md`).
+
+For each misclassified image the VLM is forced to produce **7 labelled sections**:
+
+| Section | What it answers |
+|---------|----------------|
+| 🔬 Distortion Artifacts | Exact artifacts visible — blur halos, JPEG 8×8 blocks, mosaic tiles, noise speckle — with region references |
+| ✅ Surviving True-Class Features | What still looks correct despite the distortion |
+| ❌ What Misled the Model | The specific artifact / region that triggered the wrong prediction |
+| 🧠 Model Reasoning — Correct | What the model partially got right |
+| 🚫 Model Reasoning — Incorrect | The exact mistake — which degraded pattern fired the wrong class |
+| 📊 Confidence Assessment | Why distortion confidence is that specific number; is the distortion obvious or subtle even to a human? |
+| 🎯 Root Cause | One sentence: the core mechanism of this failure |
 
 **Do I need to start the VLM server manually?**
-Yes — the script calls the VLM over HTTP (port 8000). You must start the server
-in a separate terminal before running the script. See the two modes below.
+**Yes.** The script calls the VLM over HTTP on port 8000. Start the server in a
+separate terminal first and wait for `Application startup complete` before running
+the script. See Mode A below.
 
 ---
 
-#### Mode A — Full report (with VLM visual analysis) 🖼️
+#### Mode A — Full deep report (with VLM visual analysis) 🖼️
 
-**Step 1 — Start the vLLM server** (separate terminal, keep it running):
+**Terminal 1 — Start the vLLM server and keep it running:**
 
 ```bash
 cd ~/vision_dev_project
@@ -81,10 +94,14 @@ python3 -m vllm.entrypoints.openai.api_server \
   --port 8000
 ```
 
-Wait until you see `Application startup complete` in the server terminal.
-First run will download the model (~5.8 GB to `/mnt/data/pratik_models`).
+Wait until this line appears in Terminal 1:
+```
+INFO:     Application startup complete.
+```
 
-**Step 2 — Run the report script** (your normal terminal):
+First run downloads the model (~5.8 GB to `/mnt/data/pratik_models`).
+
+**Terminal 2 — Run the report:**
 
 ```bash
 cd ~/vision_dev_project/pipe
@@ -92,16 +109,28 @@ source ../venv_vision/bin/activate
 python3 vision_reasoning_report.py
 ```
 
-That’s it — no arguments needed. It auto-discovers the latest logs.
+No arguments needed — auto-discovers the latest logs.
 
-Output: `~/vision_dev_project/ai_reasoning_summary.md`
+The script **automatically waits** for the server to be ready (polls `/health`
+every 5 s, up to 5 minutes). You will see a live countdown:
+
+```
+⏳ Waiting for vLLM server on port 8000 (timeout=300s)…
+   not ready yet — retrying in 5s (~270s remaining) …
+✅ Server ready (after ~30s)
+```
+
+If the server never becomes ready within 5 minutes the script falls back to
+stats-only mode automatically — no crash, no lost work.
+
+Output → `~/vision_dev_project/ai_reasoning_summary.md`
 
 ---
 
 #### Mode B — Stats-only report (no GPU / no VLM server) 📊
 
-No server needed. Skips VLM calls and produces a report with only the
-numeric failure statistics and recommendations.
+No server, no GPU needed. Produces failure statistics, confusion tables, and
+recommendations — but without the per-image VLM visual analysis sections.
 
 ```bash
 cd ~/vision_dev_project/pipe
@@ -122,11 +151,11 @@ python3 vision_reasoning_report.py --no-vlm
 --output PATH      Override output .md path (default: ai_reasoning_summary.md in project root)
 --training-log     Override: use a specific training_log JSON instead of auto-discovering latest
 --misclassified    Override: use a specific misclassified JSON instead of auto-discovering latest
---no-vlm           Skip VLM calls entirely (stats-only mode)
+--no-vlm           Skip VLM calls entirely — stats-only mode, no server required
 --seed N           Random seed for image sampling (default: 42)
 ```
 
-Example with all flags explicit:
+Example with all flags explicit (run from inside `pipe/`):
 
 ```bash
 python3 vision_reasoning_report.py \
@@ -142,39 +171,54 @@ python3 vision_reasoning_report.py \
 
 #### Prerequisites check
 
-Before running, confirm:
-1. `pipe/logs/training_log_*.json` exists (run `test.py` first)
-2. `pipe/logs/misclassified_*.json` exists (run `export_misclassified.py` or check `debug_logger.py` output)
-3. `pipe/reports/distortion_report.json` exists (run `distortion_diagnostic_report.py` first)
-4. For Mode A: vLLM server is running and you see `Application startup complete`
+Before running, confirm all four conditions are met:
+
+```
+1. pipe/logs/training_log_*.json        → run test.py first
+2. pipe/logs/misclassified_*.json       → produced by debug_logger.py during training
+3. pipe/reports/distortion_report.json  → run distortion_diagnostic_report.py first
+4. (Mode A only) vLLM server running    → Terminal 1 shows “Application startup complete”
+```
 
 ---
 
 ## ▶️ Full recommended flow (all steps)
 
 ```bash
+# ── Terminal 1: keep this running for step 4 ──────────────────────────────────
+cd ~/vision_dev_project
+source venv_vision/bin/activate
+VLLM_USE_V1=0 HUGGINGFACE_HUB_CACHE=”/mnt/data/pratik_models” \
+python3 -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-VL-7B-Instruct \
+  --quantization bitsandbytes \
+  --gpu-memory-utilization 0.4 \
+  --max-model-len 2048 \
+  --enforce-eager \
+  --port 8000
+# wait for: INFO:     Application startup complete.
+
+
+# ── Terminal 2: pipeline steps ────────────────────────────────────────────────
 cd ~/vision_dev_project/pipe
 source ../venv_vision/bin/activate
 
-# 1. Train + log misclassifications
+# Step 1 — train and log misclassified samples
 python3 test.py
+# produces: logs/training_log_*.json  +  logs/misclassified_*.json
 
-# 2. Generate cluster diagnostic report
+# Step 2 — cluster diagnostic (t-SNE + archetype selection)
 python3 distortion_diagnostic_report.py \
   --base-dir logs/misclassified_YYYYMMDD_HHMMSS.json \
   --output   reports/distortion_report.json \
   --plot     reports/distortion_clusters.png
+# produces: reports/distortion_report.json  +  reports/distortion_clusters.png
 
-# 3a. Start VLM server in a SEPARATE terminal (for full report)
-#     VLLM_USE_V1=0 HUGGINGFACE_HUB_CACHE=”/mnt/data/pratik_models” \
-#     python3 -m vllm.entrypoints.openai.api_server \
-#       --model Qwen/Qwen2.5-VL-7B-Instruct --quantization bitsandbytes \
-#       --gpu-memory-utilization 0.4 --max-model-len 2048 --enforce-eager --port 8000
-
-# 3b. Generate AI reasoning report (once server shows “Application startup complete”)
+# Step 3 — deep AI visual reasoning report (requires Terminal 1 running)
 python3 vision_reasoning_report.py
+# produces: ../ai_reasoning_summary.md  (project root)
 
-# OR stats-only without VLM:
+# Step 3 (alt) — stats-only, no VLM server needed
 python3 vision_reasoning_report.py --no-vlm
 ```
 
@@ -207,10 +251,15 @@ ai_reasoning_summary.md         # final report (written to project root)
 
 ## 🧪 Notes / troubleshooting
 
-- If you run `distortion_diagnostic_report.py` with a folder like `pipe/misclassified` that has no images, it will report “No images found.” Use the `.json` log file instead.
-- The script downloads ResNet18 weights on the first run (cached under `~/.cache/torch/hub`).
-- The distortion predictor uses `best.pt` and is run automatically by `debug_logger.py` during training.
-- `vision_reasoning_report.py` must be run from inside `pipe/` **or** from the project root — paths resolve correctly either way.
-- If the vLLM server is not running and you use Mode A, you will see `Connection refused` errors per image. Use `--no-vlm` for stats-only output.
-- The VLM server takes ~30–60 seconds to start. Do not run the report script until `Application startup complete` appears.
-- VRAM usage at 4-bit: Qwen2.5-VL ~5.8 GB. If you hit OOM, lower `--gpu-memory-utilization` to `0.3`.
+**distortion_diagnostic_report.py**
+- If you pass a folder with no images it will say “No images found.” — pass the `.json` log file instead; images are extracted automatically.
+- ResNet18 weights are downloaded on the first run and cached under `~/.cache/torch/hub`.
+
+**vision_reasoning_report.py**
+- Run from inside `pipe/` or from the project root — paths resolve correctly either way.
+- If the vLLM server is not running you will see `Connection refused` for every image. Switch to `--no-vlm` or start the server first.
+- The server takes **30–90 seconds to load the model**. The script polls `/health` automatically so you no longer need to wait and watch Terminal 1 — just run the script and it will block until the server is ready.
+- VRAM at 4-bit quantization: Qwen2.5-VL uses ~5.8 GB. If you hit OOM reduce `--gpu-memory-utilization 0.3` in the server command.
+- Each image makes one VLM call (~2–5 s each). With `--samples 3` and 4 distortion types that is 12 calls total (~1 min).
+- If the VLM response does not contain the expected section labels (`DISTORTION ARTIFACTS:`, `ROOT CAUSE:`, etc.) it is stored as `_raw` and displayed verbatim — the report still generates cleanly.
+- The distortion predictor (`best.pt`) is run by `debug_logger.py` during training automatically — you do not need to call it manually.

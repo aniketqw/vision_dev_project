@@ -417,3 +417,182 @@ Distortion: NOISE
 2026-03-17 03:11:14,461 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.980042 seconds
 2026-03-17 03:11:15,443 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/noise/d599d49df5be108e1a4b5ef63e456759add30308.png: Connection error.
 2026-03-17 03:11:15,445 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:634) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary.md
+2026-03-17 03:12:59,898 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:733) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260317_012558.json
+2026-03-17 03:12:59,899 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:738) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331.json
+2026-03-17 03:12:59,900 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:743) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-17 03:12:59,900 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:752) - Loading training summary…
+2026-03-17 03:12:59,954 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:755) - Loading misclassified stats…
+2026-03-17 03:12:59,993 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:758) - Loading distortion report…
+2026-03-17 03:12:59,993 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: BLUR
+2026-03-17 03:12:59,993 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:12:59,994 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: JPEG
+2026-03-17 03:12:59,994 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:12:59,994 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: PIXELATE
+2026-03-17 03:12:59,995 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:12:59,995 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: NOISE
+2026-03-17 03:12:59,995 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:12:59,996 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:634) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary.md
+2026-03-17 03:17:47,207 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:733) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260317_012558.json
+2026-03-17 03:17:47,208 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:738) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331.json
+2026-03-17 03:17:47,208 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:743) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-17 03:17:47,209 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:752) - Loading training summary…
+2026-03-17 03:17:47,364 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:755) - Loading misclassified stats…
+2026-03-17 03:17:47,485 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:758) - Loading distortion report…
+2026-03-17 03:17:47,492 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:764) - Building VLM chain → http://localhost:8000/v1  model=Qwen/Qwen2.5-VL-7B-Instruct
+2026-03-17 03:17:50,946 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: BLUR
+2026-03-17 03:17:51,009 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:17:51,010 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 56cb777d94a395bc7eab6d1caed556e72dc75a44.png  true=cat  pred=dog  conf=0.0228
+2026-03-17 03:17:51,080 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.443632 seconds
+2026-03-17 03:17:51,534 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.790146 seconds
+2026-03-17 03:17:52,333 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/blur/56cb777d94a395bc7eab6d1caed556e72dc75a44.png: Connection error.
+2026-03-17 03:17:52,334 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 3c9ab182a5013105d667c5e92e452b291c7f50fe.png  true=dog  pred=horse  conf=0.0193
+2026-03-17 03:17:52,337 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.497306 seconds
+2026-03-17 03:17:52,836 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.988147 seconds
+2026-03-17 03:17:53,874 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/blur/3c9ab182a5013105d667c5e92e452b291c7f50fe.png: Connection error.
+2026-03-17 03:17:53,885 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 782de3f7d0305d2701d72cf6cb02dd8e55b674d3.png  true=dog  pred=ship  conf=0.0192
+2026-03-17 03:17:53,888 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.408612 seconds
+2026-03-17 03:17:54,317 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.855168 seconds
+2026-03-17 03:17:55,177 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/blur/782de3f7d0305d2701d72cf6cb02dd8e55b674d3.png: Connection error.
+2026-03-17 03:17:55,198 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: JPEG
+2026-03-17 03:17:55,232 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:17:55,233 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: b8e50fbf6593ad99c6d379e62c630fc809c8ef45.png  true=cat  pred=deer  conf=0.0369
+2026-03-17 03:17:55,245 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.470888 seconds
+2026-03-17 03:17:55,747 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.997671 seconds
+2026-03-17 03:17:56,765 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/jpeg/b8e50fbf6593ad99c6d379e62c630fc809c8ef45.png: Connection error.
+2026-03-17 03:17:56,780 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 41000dc8a8f7969e4d424527892b78916a2bda2d.png  true=horse  pred=dog  conf=0.0499
+2026-03-17 03:17:56,783 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.477536 seconds
+2026-03-17 03:17:57,291 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.891576 seconds
+2026-03-17 03:17:58,185 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/jpeg/41000dc8a8f7969e4d424527892b78916a2bda2d.png: Connection error.
+2026-03-17 03:17:58,186 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 1235a61c0966cb017223c1bbb8a1adbd7da91235.png  true=cat  pred=deer  conf=0.0153
+2026-03-17 03:17:58,189 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.384183 seconds
+2026-03-17 03:17:58,575 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.774281 seconds
+2026-03-17 03:17:59,351 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/jpeg/1235a61c0966cb017223c1bbb8a1adbd7da91235.png: Connection error.
+2026-03-17 03:17:59,351 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: PIXELATE
+2026-03-17 03:17:59,352 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:17:59,352 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 86704b4a920a803d4a5fd7cece78c2840c4ce3be.png  true=cat  pred=dog  conf=0.0240
+2026-03-17 03:17:59,355 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.385951 seconds
+2026-03-17 03:17:59,743 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.774915 seconds
+2026-03-17 03:18:00,542 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/pixelate/86704b4a920a803d4a5fd7cece78c2840c4ce3be.png: Connection error.
+2026-03-17 03:18:00,606 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 95ecdba043d2d673e7f88a9463ca06e3fbcbab09.png  true=cat  pred=frog  conf=0.0536
+2026-03-17 03:18:00,610 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.416390 seconds
+2026-03-17 03:18:01,030 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.920996 seconds
+2026-03-17 03:18:01,959 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/pixelate/95ecdba043d2d673e7f88a9463ca06e3fbcbab09.png: Connection error.
+2026-03-17 03:18:01,976 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: eda67c820e1ce668bfed71972fbe9a40cb709614.png  true=cat  pred=dog  conf=0.0462
+2026-03-17 03:18:02,001 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.402586 seconds
+2026-03-17 03:18:02,425 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.760315 seconds
+2026-03-17 03:18:03,196 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/pixelate/eda67c820e1ce668bfed71972fbe9a40cb709614.png: Connection error.
+2026-03-17 03:18:03,198 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:771) - 
+────────────────────────────────────────────────────────────
+Distortion: NOISE
+2026-03-17 03:18:03,199 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:780) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:18:03,209 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: ead1f465a5bd548e04a691c1d9e412a41a7cf46e.png  true=cat  pred=frog  conf=0.0567
+2026-03-17 03:18:03,214 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.428701 seconds
+2026-03-17 03:18:03,649 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.811437 seconds
+2026-03-17 03:18:04,487 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/noise/ead1f465a5bd548e04a691c1d9e412a41a7cf46e.png: Connection error.
+2026-03-17 03:18:04,487 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: 756a90209c442dc89adb7ccf80936298514a8f08.png  true=cat  pred=truck  conf=0.0124
+2026-03-17 03:18:04,491 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.399207 seconds
+2026-03-17 03:18:04,891 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.788563 seconds
+2026-03-17 03:18:05,681 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/noise/756a90209c442dc89adb7ccf80936298514a8f08.png: Connection error.
+2026-03-17 03:18:05,682 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:390) -   → VLM call: d599d49df5be108e1a4b5ef63e456759add30308.png  true=deer  pred=automobile  conf=0.0108
+2026-03-17 03:18:05,685 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.415776 seconds
+2026-03-17 03:18:06,102 - [INFO] - openai._base_client - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/openai/_base_client.py:1071) - Retrying request to /chat/completions in 0.866398 seconds
+2026-03-17 03:18:06,970 - [WARNING] - VisionDev - (pipe/vision_reasoning_report.py:403) - VLM call failed for /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331_images/noise/d599d49df5be108e1a4b5ef63e456759add30308.png: Connection error.
+2026-03-17 03:18:07,023 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:634) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary.md
+2026-03-17 03:20:16,909 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:769) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260317_012558.json
+2026-03-17 03:20:16,912 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:774) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331.json
+2026-03-17 03:20:16,913 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:779) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-17 03:20:16,914 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:788) - Loading training summary…
+2026-03-17 03:20:16,973 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:791) - Loading misclassified stats…
+2026-03-17 03:20:17,014 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:794) - Loading distortion report…
+2026-03-17 03:20:17,016 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: BLUR
+2026-03-17 03:20:17,017 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:20:17,017 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: JPEG
+2026-03-17 03:20:17,018 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:20:17,019 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: PIXELATE
+2026-03-17 03:20:17,020 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:20:17,020 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: NOISE
+2026-03-17 03:20:17,022 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:20:17,024 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:670) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary.md
+2026-03-17 03:21:42,412 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:769) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260317_012558.json
+2026-03-17 03:21:42,503 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:774) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260317_005331.json
+2026-03-17 03:21:42,504 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:779) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-17 03:21:42,504 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:788) - Loading training summary…
+2026-03-17 03:21:43,938 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:791) - Loading misclassified stats…
+2026-03-17 03:21:44,083 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:794) - Loading distortion report…
+2026-03-17 03:23:14,221 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:276) - vLLM server is ready.
+2026-03-17 03:23:14,222 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:805) - Building VLM chain → http://localhost:8000/v1  model=Qwen/Qwen2.5-VL-7B-Instruct
+2026-03-17 03:23:14,492 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: BLUR
+2026-03-17 03:23:14,492 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:23:14,493 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 56cb777d94a395bc7eab6d1caed556e72dc75a44.png  true=cat  pred=dog  conf=0.0228
+2026-03-17 03:23:38,656 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:23:38,662 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:23:38,662 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 3c9ab182a5013105d667c5e92e452b291c7f50fe.png  true=dog  pred=horse  conf=0.0193
+2026-03-17 03:23:46,765 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:23:46,766 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:23:46,767 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 782de3f7d0305d2701d72cf6cb02dd8e55b674d3.png  true=dog  pred=ship  conf=0.0192
+2026-03-17 03:23:57,166 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:23:57,168 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:23:57,168 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: JPEG
+2026-03-17 03:23:57,169 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:23:57,169 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: b8e50fbf6593ad99c6d379e62c630fc809c8ef45.png  true=cat  pred=deer  conf=0.0369
+2026-03-17 03:24:05,320 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:05,322 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:05,322 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 41000dc8a8f7969e4d424527892b78916a2bda2d.png  true=horse  pred=dog  conf=0.0499
+2026-03-17 03:24:14,485 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:14,487 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:14,487 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 1235a61c0966cb017223c1bbb8a1adbd7da91235.png  true=cat  pred=deer  conf=0.0153
+2026-03-17 03:24:24,104 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:24,105 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:24,106 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: PIXELATE
+2026-03-17 03:24:24,106 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:24:24,106 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 86704b4a920a803d4a5fd7cece78c2840c4ce3be.png  true=cat  pred=dog  conf=0.0240
+2026-03-17 03:24:31,977 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:31,979 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:31,979 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 95ecdba043d2d673e7f88a9463ca06e3fbcbab09.png  true=cat  pred=frog  conf=0.0536
+2026-03-17 03:24:38,907 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:38,908 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:38,909 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: eda67c820e1ce668bfed71972fbe9a40cb709614.png  true=cat  pred=dog  conf=0.0462
+2026-03-17 03:24:46,211 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:46,212 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:46,213 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:812) - 
+────────────────────────────────────────────────────────────
+Distortion: NOISE
+2026-03-17 03:24:46,213 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:821) -   Sampled 3 image(s) for VLM analysis.
+2026-03-17 03:24:46,214 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: ead1f465a5bd548e04a691c1d9e412a41a7cf46e.png  true=cat  pred=frog  conf=0.0567
+2026-03-17 03:24:54,265 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:24:54,266 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:24:54,267 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: 756a90209c442dc89adb7ccf80936298514a8f08.png  true=cat  pred=truck  conf=0.0124
+2026-03-17 03:25:03,372 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:25:03,374 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:25:03,374 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:426) -   → VLM call: d599d49df5be108e1a4b5ef63e456759add30308.png  true=deer  pred=automobile  conf=0.0108
+2026-03-17 03:25:11,100 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-17 03:25:11,102 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-17 03:25:11,104 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:670) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary.md
