@@ -16,7 +16,9 @@ venv*/
 /exp/helperFunc/data/
 
 # Training logs / outputs
-/pipe/logs/
+/pipe/logs/*
+!/pipe/logs/*.json
+!/pipe/logs/*.png
 
 # Intermediate outputs
 /pipe/checkpoints/
