@@ -1,10 +1,33 @@
-venv_vision/
-
+# Python
 __pycache__/
-*.py[cod]
-exp/helperFunc/pytorch_lighting/data/cifar-10-python.tar.gz
-exp/helperFunc/pytorch_lighting/data/cifar-10-batches-py/
-exp/helperFunc/pytorch_lighting/lightning_logs/version_1/checkpoints/epoch=0-step=1563.ckpt
-exp/helperFunc/pytorch_lighting/lightning_logs/version_2/checkpoints/epoch=1-step=3126.ckpt
-*.tar.gz
-downloadModel/models/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv*/
+
+# Data and checkpoints
+/data/
+/checkpoints/
+/logs/
+
+# Downloaded models / datasets
+/downloadModel/
+/exp/helperFunc/data/
+
+# Training logs / outputs
+/pipe/logs/
+
+# VSCode
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
