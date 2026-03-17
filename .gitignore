@@ -18,6 +18,10 @@ venv*/
 # Training logs / outputs
 /pipe/logs/
 
+# Intermediate outputs
+/pipe/checkpoints/
+/pipe/data/
+
 # VSCode
 .vscode/
 

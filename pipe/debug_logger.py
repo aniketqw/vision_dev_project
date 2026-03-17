@@ -18,6 +18,11 @@ All data is saved to a single comprehensive JSON file with timestamp.
 import pytorch_lightning as pl
 import torch
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.decomposition import PCA
+try:
+    from sklearn.manifold import TSNE
+except ImportError:
+    TSNE = None
 import numpy as np
 import json
 import os
@@ -28,6 +33,12 @@ from PIL import Image
 import time
 import hashlib
 import matplotlib.pyplot as plt
+
+# Optional, for nicer scatterplots
+try:
+    import seaborn as sns
+except ImportError:
+    sns = None
 
 
 class DebugLogger(pl.Callback):
@@ -238,8 +249,16 @@ class DebugLogger(pl.Callback):
                                 else self.distortion_classes[cls_idx]
                             )
                             distortion_conf = float(confs[best_idx].item())
+                        else:
+                            # no detection -> unknown
+                            distortion_pred = "unknown"
                     except Exception as e:
-                        distortion_pred = f"error:{e}"
+                        distortion_pred = "error"
+                        distortion_conf = None
+
+                # Ensure we always have some value (avoid leaking CIFAR class labels into the distortion plot)
+                if distortion_pred is None:
+                    distortion_pred = "unknown"
 
                 entry = {
                     'hash': img_hash,
@@ -381,17 +400,18 @@ class DebugLogger(pl.Callback):
         sorted_mis = sorted(unique.values(), key=lambda e: e['count'], reverse=True)
         all_data['misclassified_samples'] = sorted_mis
         
-        # also generate a distribution graph of distortion types (prefer model prediction if available)
+        # also generate a distribution graph of distortion types (predicted by the distortion model)
         distortion_counts = {}
         for entry in self.misclassified_data:
-            dist = entry.get('distortion_predicted') or entry.get('distortion_type', 'unknown')
+            dist = entry.get('distortion_predicted') or 'unknown'
             distortion_counts[dist] = distortion_counts.get(dist, 0) + 1
         total = sum(distortion_counts.values())
         if total > 0:
             percentages = {k: v / total * 100 for k, v in distortion_counts.items()}
-            plt.figure(figsize=(8, 6))
+            plt.figure(figsize=(8, 6), dpi=120)
             plt.bar(percentages.keys(), percentages.values(), color='skyblue')
             plt.ylabel('Percentage of misclassified images')
+            plt.xlabel('Predicted distortion')
             plt.title('Distortion type distribution')
             plt.xticks(rotation=45, ha='right')
             plt.tight_layout()
@@ -399,6 +419,63 @@ class DebugLogger(pl.Callback):
             plt.savefig(graph_path)
             plt.close()
             print(f"📈 Distortion distribution graph saved to: {graph_path}")
+
+        # Save a second plot (cluster visualization) based on image features.
+        # Use PCA to reduce image features into 2D, then color by distortion label.
+        try:
+            # Decode images from base64
+            decoded = []
+            labels = []
+            for entry in self.misclassified_data:
+                dist_label = entry.get('distortion_predicted') or 'unknown'
+                img_b64 = entry.get('image_base64')
+                if not img_b64:
+                    continue
+                img_bytes = base64.b64decode(img_b64)
+                img = Image.open(BytesIO(img_bytes)).convert('RGB')
+                arr = np.asarray(img).astype(np.float32) / 255.0
+                decoded.append(arr.flatten())
+                labels.append(dist_label)
+
+            if len(decoded) > 0:
+                X = np.stack(decoded)
+                # optionally reduce sample size for speed
+                if X.shape[0] > 1000:
+                    idx = np.random.choice(X.shape[0], 1000, replace=False)
+                    X = X[idx]
+                    labels = [labels[i] for i in idx]
+
+                # Use PCA for fast embedding; fall back to t-SNE if more than 2 components needed.
+                pca = PCA(n_components=2)
+                emb = pca.fit_transform(X)
+
+                # Prepare plot
+                plt.figure(figsize=(10, 8), dpi=120)
+                unique_labels = sorted(set(labels))
+                palette = sns.color_palette('tab10', n_colors=len(unique_labels)) if sns is not None else None
+                for i, lbl in enumerate(unique_labels):
+                    idx = [j for j, v in enumerate(labels) if v == lbl]
+                    pts = emb[idx]
+                    plt.scatter(
+                        pts[:, 0], pts[:, 1],
+                        label=lbl,
+                        s=15,
+                        alpha=0.75,
+                        c=palette[i] if palette is not None else None,
+                        edgecolors='none'
+                    )
+
+                plt.xlabel('PCA component 1')
+                plt.ylabel('PCA component 2')
+                plt.title('Misclassified image clusters (colored by predicted distortion)')
+                plt.legend(fontsize='small', bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.tight_layout()
+                cluster_path = os.path.join(self.save_dir, 'distortion_cluster.png')
+                plt.savefig(cluster_path)
+                plt.close()
+                print(f"📈 Distortion cluster graph saved to: {cluster_path}")
+        except Exception as e:
+            print(f"⚠️ Failed to generate cluster plot: {e}")
         
         # Save consolidated JSON file
         output_file = os.path.join(self.save_dir, f'training_log_{timestamp}.json')
