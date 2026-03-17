@@ -238,22 +238,34 @@ class DebugLogger(pl.Callback):
                         # models expect HWC uint8 images
                         img_for_model = img_np
                         res = self.distortion_model(img_for_model, conf=self.distortion_conf_threshold, verbose=False)
-                        if len(res) > 0 and hasattr(res[0], 'boxes') and len(res[0].boxes) > 0:
-                            # pick highest confidence detection
-                            confs = res[0].boxes.conf.cpu()
+
+                        def _extract_best_prediction(result):
+                            if not (len(result) > 0 and hasattr(result[0], 'boxes') and len(result[0].boxes) > 0):
+                                return None, None
+                            confs = result[0].boxes.conf.cpu()
                             best_idx = int(confs.argmax())
-                            cls_idx = int(res[0].boxes.cls[best_idx].cpu())
-                            distortion_pred = (
+                            cls_idx = int(result[0].boxes.cls[best_idx].cpu())
+                            label = (
                                 self.distortion_classes.get(cls_idx, str(cls_idx))
                                 if isinstance(self.distortion_classes, dict)
                                 else self.distortion_classes[cls_idx]
                             )
-                            distortion_conf = float(confs[best_idx].item())
-                        else:
-                            # no detection -> unknown
+                            return label, float(confs[best_idx].item())
+
+                        distortion_pred, distortion_conf = _extract_best_prediction(res)
+
+                        # If no detection, try lowering the threshold to force a prediction
+                        if distortion_pred is None:
+                            res_low = self.distortion_model(img_for_model, conf=0.0, verbose=False)
+                            distortion_pred, distortion_conf = _extract_best_prediction(res_low)
+
+                        # If still None, explicitly mark as unknown
+                        if distortion_pred is None:
                             distortion_pred = "unknown"
-                    except Exception as e:
-                        distortion_pred = "error"
+                            distortion_conf = None
+
+                    except Exception:
+                        distortion_pred = "unknown"
                         distortion_conf = None
 
                 # Ensure we always have some value (avoid leaking CIFAR class labels into the distortion plot)
