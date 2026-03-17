@@ -252,32 +252,72 @@ def gather_images_for_distortion(
 
 # ── VLM analysis ──────────────────────────────────────────────────────────────
 
+_VLM_PROMPT_TEXT = """\
+You are an expert computer vision failure analyst.
+
+You are given a 32×32 CIFAR-10 image that was MISCLASSIFIED by a neural network.
+Study the image very carefully before answering — every pixel detail matters at this resolution.
+
+━━━ IMAGE METADATA ━━━
+Distortion applied        : {distortion_type}
+True class (ground truth) : {true_label}
+Predicted class (wrong)   : {pred_label}
+Distortion confidence     : {dist_confidence}
+Sample role               : {role}
+  (typical = near cluster centroid — representative failure)
+  (outlier  = far from centroid   — unusual/edge-case failure)
+
+━━━ YOUR TASK ━━━
+Respond using EXACTLY these seven labeled sections. Each section must start on its own line \
+with the label shown below followed by a colon. Be specific — reference actual colors, \
+shapes, regions, and pixel-level observations you see in the image.
+
+DISTORTION ARTIFACTS:
+Describe the specific visual artifacts the {distortion_type} distortion has introduced \
+(e.g. blur halos around edges, 8×8 JPEG block grid, mosaic rectangles, noise speckle pattern). \
+Point to exact regions (top-left, fur area, background, etc.).
+
+SURVIVING TRUE-CLASS FEATURES:
+What features in the image still correctly suggest this is a {true_label}? \
+(color blobs, silhouette shape, structural layout that survived the distortion)
+
+WHAT MISLED THE MODEL:
+Which specific distortion artifact or degraded region makes this look like a {pred_label}? \
+Be precise — name the visual pattern and where it appears.
+
+MODEL REASONING CORRECT:
+What did the model partially get right when looking at this image? \
+(any features it correctly associated with the scene content)
+
+MODEL REASONING INCORRECT:
+What specific mistake did the model make? Which artifact or pattern triggered the wrong \
+class activation, and why does it visually resemble {pred_label}?
+
+CONFIDENCE ASSESSMENT:
+The distortion detection confidence was {dist_confidence}. Based on what you see, \
+explain why the confidence is this value — does the distortion look obvious or subtle? \
+Is the image ambiguous even to a human eye?
+
+ROOT CAUSE:
+One sentence only: the single core reason why {distortion_type} distortion \
+on a {true_label} image specifically triggers a {pred_label} prediction.\
+"""
+
+
 def build_vlm_chain(model_name: str, port: int) -> object:
     """Build and return the LangChain vision chain."""
     llm = ChatOpenAI(
         model=model_name,
         openai_api_key="local-3090",
         openai_api_base=f"http://localhost:{port}/v1",
-        temperature=0.2,
-        max_tokens=512,
+        temperature=0.1,
+        max_tokens=900,
     )
     prompt = ChatPromptTemplate.from_messages([
         ("user", [
             {
                 "type": "text",
-                "text": (
-                    "You are a computer vision diagnostics assistant.\n\n"
-                    "This is a 32×32 CIFAR-10 image that was MISCLASSIFIED by a neural network.\n\n"
-                    "Distortion type applied : {distortion_type}\n"
-                    "True class             : {true_label}\n"
-                    "Predicted class        : {pred_label}\n"
-                    "Sample role            : {role} (typical=near cluster centroid, outlier=far from centroid)\n\n"
-                    "Tasks:\n"
-                    "1. Describe what you observe in this image (colour, shapes, textures, visible artifacts).\n"
-                    "2. Explain WHY the distortion makes this image look like '{pred_label}' instead of '{true_label}'.\n"
-                    "3. Identify the specific visual feature that misleads the model.\n"
-                    "Keep your answer concise (3–5 sentences max)."
-                ),
+                "text": _VLM_PROMPT_TEXT,
             },
             {
                 "type": "image_url",
@@ -288,8 +328,54 @@ def build_vlm_chain(model_name: str, port: int) -> object:
     return prompt | llm | StrOutputParser()
 
 
-def analyze_image(chain, item: Dict) -> Optional[str]:
-    """Call the VLM chain for one image item; return response string or None."""
+def parse_vlm_sections(raw: str) -> Dict[str, str]:
+    """
+    Parse the VLM response into a dict keyed by section label.
+    Expects lines starting with 'LABEL:' as section boundaries.
+    Falls back to storing everything under '_raw' if no sections found.
+    """
+    section_keys = [
+        "DISTORTION ARTIFACTS",
+        "SURVIVING TRUE-CLASS FEATURES",
+        "WHAT MISLED THE MODEL",
+        "MODEL REASONING CORRECT",
+        "MODEL REASONING INCORRECT",
+        "CONFIDENCE ASSESSMENT",
+        "ROOT CAUSE",
+    ]
+    result: Dict[str, str] = {}
+    current_key = None
+    current_lines: List[str] = []
+
+    for line in raw.splitlines():
+        matched = False
+        for key in section_keys:
+            if line.upper().startswith(key + ":"):
+                if current_key:
+                    result[current_key] = " ".join(current_lines).strip()
+                current_key = key
+                # grab any text after the colon on the same line
+                after = line[len(key) + 1:].strip()
+                current_lines = [after] if after else []
+                matched = True
+                break
+        if not matched and current_key:
+            current_lines.append(line.strip())
+
+    if current_key:
+        result[current_key] = " ".join(current_lines).strip()
+
+    if not result:
+        result["_raw"] = raw.strip()
+
+    return result
+
+
+def analyze_image(chain, item: Dict) -> Optional[Dict]:
+    """
+    Call the VLM chain for one image item.
+    Returns a dict of parsed sections (or {'_raw': ...}) or None on failure.
+    """
     p: Path = item["path"]
     meta = item.get("meta") or {}
     dist_type = item.get("dist_type", "unknown")
@@ -297,18 +383,22 @@ def analyze_image(chain, item: Dict) -> Optional[str]:
     true_lbl = CIFAR10_CLASSES.get(meta.get("true_label"), str(meta.get("true_label", "?")))
     pred_lbl = CIFAR10_CLASSES.get(meta.get("predicted_label"), str(meta.get("predicted_label", "?")))
     role = item.get("role", "random")
+    dist_conf = meta.get("distortion_confidence") or 0.0
 
     try:
         img_b64 = encode_image(p)
-        logger.info(f"  → VLM call: {p.name}  true={true_lbl}  pred={pred_lbl}")
-        response = chain.invoke({
+        logger.info(f"  → VLM call: {p.name}  true={true_lbl}  pred={pred_lbl}  conf={dist_conf:.4f}")
+        raw_response = chain.invoke({
             "distortion_type": dist_type,
             "true_label": true_lbl,
             "pred_label": pred_lbl,
             "role": role,
+            "dist_confidence": f"{dist_conf:.4f}",
             "image_data": img_b64,
         })
-        return response.strip()
+        sections = parse_vlm_sections(raw_response.strip())
+        logger.info(f"     sections found: {list(sections.keys())}")
+        return sections
     except Exception as exc:
         logger.warning(f"VLM call failed for {p}: {exc}")
         return None
@@ -397,6 +487,17 @@ def render_report(
         "",
     ]
 
+    # emoji + label pairs for each parsed section
+    _SECTION_DISPLAY = [
+        ("DISTORTION ARTIFACTS",          "🔬 Distortion Artifacts Observed"),
+        ("SURVIVING TRUE-CLASS FEATURES",  "✅ Surviving True-Class Features"),
+        ("WHAT MISLED THE MODEL",          "❌ What Misled the Model"),
+        ("MODEL REASONING CORRECT",        "🧠 Model Reasoning — Correct Part"),
+        ("MODEL REASONING INCORRECT",      "🚫 Model Reasoning — Incorrect Part"),
+        ("CONFIDENCE ASSESSMENT",          "📊 Confidence Assessment"),
+        ("ROOT CAUSE",                     "🎯 Root Cause"),
+    ]
+
     blind_spot_summaries = []
 
     for dt in DISTORTION_TYPES:
@@ -405,8 +506,8 @@ def render_report(
         pct = (d["count"] / total_mc * 100) if (d and total_mc) else 0
 
         lines += [
-            f"### 4.{DISTORTION_TYPES.index(dt)+1} {dt.capitalize()} — "
-            f"{d['count'] if d else 0} failures ({pct:.1f}%)",
+            f"### 4.{DISTORTION_TYPES.index(dt)+1} {dt.capitalize()} "
+            f"— {d['count'] if d else 0} failures ({pct:.1f}%)",
             "",
         ]
 
@@ -427,31 +528,72 @@ def render_report(
             blind_spot_summaries.append((dt, "_No visual analysis available._"))
             continue
 
-        vlm_texts = []
-        for item in analyses:
-            vlm_resp = item.get("vlm_response")
-            if not vlm_resp:
-                continue
+        root_causes = []
+        any_vlm = False
+
+        for img_idx, item in enumerate(analyses, 1):
+            sections = item.get("vlm_response")   # now a dict after analyze_image change
             meta = item.get("meta") or {}
             true_lbl = CIFAR10_CLASSES.get(meta.get("true_label"), "?")
             pred_lbl = CIFAR10_CLASSES.get(meta.get("predicted_label"), "?")
             role = item.get("role", "random")
-            dist_conf = meta.get("distortion_confidence", 0) or 0
+            dist_conf = meta.get("distortion_confidence") or 0.0
+            cluster_dist = item.get("distance")
+            fname = Path(item["path"]).name
+
+            # ── image header card ──
+            role_icon = {"typical": "⭕", "outlier": "⚠️"}.get(role, "🔹")
+            cluster_str = f" · cluster dist={cluster_dist:.3f}" if cluster_dist is not None else ""
             lines += [
-                f"**Image:** `{Path(item['path']).name}` "
-                f"[{role}]  "
-                f"true=**{true_lbl}** → pred=**{pred_lbl}**  "
-                f"conf={dist_conf:.4f}",
+                f"#### Image {img_idx} — `{fname}`",
                 "",
-                f"> {vlm_resp}",
+                f"| Field | Value |",
+                f"|-------|-------|",
+                f"| Role | {role_icon} **{role}**{cluster_str} |",
+                f"| True class | **{true_lbl}** |",
+                f"| Predicted (wrong) | **{pred_lbl}** |",
+                f"| Distortion confidence | `{dist_conf:.4f}` |",
                 "",
             ]
-            vlm_texts.append(vlm_resp)
 
-        # derive a blind spot summary from the VLM responses
-        if vlm_texts:
-            combined = " ".join(vlm_texts)
-            blind_spot_summaries.append((dt, combined[:400] + "…" if len(combined) > 400 else combined))
+            if not sections:
+                lines.append("_VLM call failed for this image — is the server running?_\n")
+                continue
+
+            any_vlm = True
+
+            # ── fallback: raw response ──
+            if "_raw" in sections:
+                lines += [
+                    "> _(response not structured — displaying raw output)_",
+                    "",
+                    f"> {sections['_raw']}",
+                    "",
+                ]
+                root_causes.append(sections["_raw"][:200])
+                continue
+
+            # ── structured sections ──
+            for key, label in _SECTION_DISPLAY:
+                text = sections.get(key, "").strip()
+                if not text:
+                    continue
+                lines += [
+                    f"**{label}**",
+                    "",
+                    f"> {text}",
+                    "",
+                ]
+
+            rc = sections.get("ROOT CAUSE", "").strip()
+            if rc:
+                root_causes.append(rc)
+
+        # ── blind spot summary for this distortion type ──
+        if root_causes:
+            blind_spot_summaries.append((dt, " | ".join(root_causes)))
+        elif any_vlm:
+            blind_spot_summaries.append((dt, "_Root cause not extracted from VLM response._"))
         else:
             blind_spot_summaries.append((dt, "_VLM calls failed — check server._"))
 

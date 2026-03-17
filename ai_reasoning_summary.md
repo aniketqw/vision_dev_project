@@ -1,5 +1,5 @@
 # AI Vision Reasoning Report
-**Generated:** 2026-03-17 03:02  
+**Generated:** 2026-03-17 03:11  
 **Training log:** `training_log_20260317_012558.json`  
 **Misclassified log:** `misclassified_20260317_005331.json`  
 **Model:** CIFAR-10 · 32×32 px · 3 epochs
@@ -72,12 +72,78 @@
 **Avg distortion confidence:** 0.0382  
 **Epoch distribution:** ep0:1515 · ep1:297 · ep2:137
 
+#### Image 1 — `56cb777d94a395bc7eab6d1caed556e72dc75a44.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=0.289 |
+| True class | **cat** |
+| Predicted (wrong) | **dog** |
+| Distortion confidence | `0.0228` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 2 — `3c9ab182a5013105d667c5e92e452b291c7f50fe.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=1.180 |
+| True class | **dog** |
+| Predicted (wrong) | **horse** |
+| Distortion confidence | `0.0193` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 3 — `782de3f7d0305d2701d72cf6cb02dd8e55b674d3.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=1.236 |
+| True class | **dog** |
+| Predicted (wrong) | **ship** |
+| Distortion confidence | `0.0192` |
+
+_VLM call failed for this image — is the server running?_
+
 ### 4.2 Jpeg — 1434 failures (29.8%)
 
 **Most misclassified true classes:** deer (256), bird (214), cat (201), dog (183), horse (128)  
 **Most common wrong predictions:** frog (207), horse (175), bird (168), cat (161), deer (158)  
 **Avg distortion confidence:** 0.0679  
 **Epoch distribution:** ep0:1156 · ep1:188 · ep2:90
+
+#### Image 1 — `b8e50fbf6593ad99c6d379e62c630fc809c8ef45.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=0.793 |
+| True class | **cat** |
+| Predicted (wrong) | **deer** |
+| Distortion confidence | `0.0369` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 2 — `41000dc8a8f7969e4d424527892b78916a2bda2d.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=1.655 |
+| True class | **horse** |
+| Predicted (wrong) | **dog** |
+| Distortion confidence | `0.0499` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 3 — `1235a61c0966cb017223c1bbb8a1adbd7da91235.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=1.927 |
+| True class | **cat** |
+| Predicted (wrong) | **deer** |
+| Distortion confidence | `0.0153` |
+
+_VLM call failed for this image — is the server running?_
 
 ### 4.3 Pixelate — 708 failures (14.7%)
 
@@ -86,12 +152,78 @@
 **Avg distortion confidence:** 0.0290  
 **Epoch distribution:** ep0:580 · ep1:87 · ep2:41
 
+#### Image 1 — `86704b4a920a803d4a5fd7cece78c2840c4ce3be.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=0.569 |
+| True class | **cat** |
+| Predicted (wrong) | **dog** |
+| Distortion confidence | `0.0240` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 2 — `95ecdba043d2d673e7f88a9463ca06e3fbcbab09.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=2.717 |
+| True class | **cat** |
+| Predicted (wrong) | **frog** |
+| Distortion confidence | `0.0536` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 3 — `eda67c820e1ce668bfed71972fbe9a40cb709614.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=2.998 |
+| True class | **cat** |
+| Predicted (wrong) | **dog** |
+| Distortion confidence | `0.0462` |
+
+_VLM call failed for this image — is the server running?_
+
 ### 4.4 Noise — 105 failures (2.2%)
 
 **Most misclassified true classes:** cat (19), bird (17), dog (12), ship (12), truck (11)  
 **Most common wrong predictions:** cat (16), airplane (16), dog (15), horse (11), automobile (10)  
 **Avg distortion confidence:** 0.0358  
 **Epoch distribution:** ep0:93 · ep1:8 · ep2:4
+
+#### Image 1 — `ead1f465a5bd548e04a691c1d9e412a41a7cf46e.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=1.528 |
+| True class | **cat** |
+| Predicted (wrong) | **frog** |
+| Distortion confidence | `0.0567` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 2 — `756a90209c442dc89adb7ccf80936298514a8f08.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=2.160 |
+| True class | **cat** |
+| Predicted (wrong) | **truck** |
+| Distortion confidence | `0.0124` |
+
+_VLM call failed for this image — is the server running?_
+
+#### Image 3 — `d599d49df5be108e1a4b5ef63e456759add30308.png`
+
+| Field | Value |
+|-------|-------|
+| Role | ⭕ **typical** · cluster dist=3.386 |
+| True class | **deer** |
+| Predicted (wrong) | **automobile** |
+| Distortion confidence | `0.0108` |
+
+_VLM call failed for this image — is the server running?_
 
 ---
 
@@ -120,4 +252,4 @@ Based on the failure distribution and VLM visual analysis above:
 
 ---
 
-*Report generated by `pipe/vision_reasoning_report.py` · 2026-03-17 03:02*
+*Report generated by `pipe/vision_reasoning_report.py` · 2026-03-17 03:11*
