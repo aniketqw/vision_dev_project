@@ -77,7 +77,7 @@ from v3.image_sampler import gather_images_for_distortion, semantic_deduplicate
 from v3.rag import RAGStore
 from v3.chains import build_llm
 from v3.graph import AnalysisState, build_graph
-from v3.renderer import generate_dynamic_recommendations, render_report
+from v3.renderer import generate_dynamic_recommendations, render_report, _fallback_recommendations
 from v3.server_utils import wait_for_server
 
 
@@ -245,7 +245,6 @@ def main():
             port        = args.port,
         )
     else:
-        from v3.renderer import _fallback_recommendations
         recommendations = _fallback_recommendations(mc_stats)
         print("   (Using data-aware fallback recommendations — no VLM)")
 
