@@ -1,6 +1,6 @@
 """Generate a diagnostic report for distortion misclassifications.
 
-This script expects a directory structure like:
+Expects a directory structure like:
 
   /path/to/misclassified/
       blur/
@@ -8,61 +8,71 @@ This script expects a directory structure like:
       pixelate/
       noise/
 
-Each folder should contain image files (PNG/JPEG/etc.) representing misclassified
-images annotated with that distortion.
+Each folder should contain image files (PNG/JPEG) representing misclassified
+images annotated with that distortion type.
 
-It produces:
-  - a scatter plot of all images embedded in 2D (PCA -> t-SNE)
-  - selection of 3 "typical" (closest-to-centroid) and 3 "outlier" (furthest-from-centroid)
-    images per distortion category
-  - a JSON report describing those 24 images and their distances
+Outputs:
+  - A scatter plot of all images embedded in 2-D space (PCA → t-SNE).
+  - 3 "typical" (closest-to-centroid) and 3 "outlier" (furthest-from-centroid)
+    images selected per distortion category.
+  - A JSON report describing those selected images and their centroid distances.
 
 Usage:
-  python distortion_diagnostic_report.py \
-    --base-dir /path/to/misclassified \
-    --output report.json \
+  python distortion_diagnostic_report.py \\
+    --base-dir /path/to/misclassified \\
+    --output report.json \\
     --plot output_plot.png
 
-Dry-run mode:
-  python distortion_diagnostic_report.py --dry-run \
+Dry-run (processes whatever images are available):
+  python distortion_diagnostic_report.py --dry-run \\
     --base-dir /path/to/misclassified
-
 """
+
+# ── Imports ───────────────────────────────────────────────────────────────────
 
 import argparse
 import base64
 import datetime
 import json
-import os
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
-
+import numpy as np
 import torch
 import torch.nn as nn
-import torchvision.transforms as T
 import torchvision.models as models
+import torchvision.transforms as T
+from PIL import Image
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
+# ── Constants ─────────────────────────────────────────────────────────────────
+
+CATEGORIES: List[str] = ["blur", "jpeg", "pixelate", "noise"]
+IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
+
+
+# ── Image I/O helpers ─────────────────────────────────────────────────────────
 
 def _get_image_paths(base_dir: Path, categories: List[str]) -> Dict[str, List[Path]]:
-    out = {}
+    """Return a dict mapping each category to sorted image paths under base_dir."""
+    out: Dict[str, List[Path]] = {}
     for cat in categories:
-        p = base_dir / cat
-        if not p.exists() or not p.is_dir():
+        folder = base_dir / cat
+        if not folder.is_dir():
             out[cat] = []
-            continue
-        out[cat] = sorted([x for x in p.iterdir() if x.is_file() and x.suffix.lower() in ('.png', '.jpg', '.jpeg')])
+        else:
+            out[cat] = sorted(
+                p for p in folder.iterdir()
+                if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES
+            )
     return out
 
 
 def _load_and_preprocess(img_path: Path, transform) -> torch.Tensor:
-    img = Image.open(img_path).convert('RGB')
-    return transform(img)
+    """Open an image file and apply the given transform."""
+    return transform(Image.open(img_path).convert("RGB"))
 
 
 def _extract_images_from_log(
@@ -70,22 +80,24 @@ def _extract_images_from_log(
     out_dir: Path,
     categories: List[str],
 ) -> Path:
-    """Extract base64-encoded images from a misclassified JSON log.
+    """Decode base64-encoded images from a misclassified JSON log onto disk.
 
-    Images are placed into subfolders under `out_dir` named by their predicted
-    distortion label (fallbacking to 'unknown').
+    Images are placed in subfolders under *out_dir* named after the predicted
+    distortion label (falls back to 'unknown' for unrecognised labels).
+
+    Returns the resolved *out_dir* path.
     """
     out_dir = out_dir.expanduser().resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(json_path, "r") as f:
+    with open(json_path) as f:
         data = json.load(f)
 
     samples = data.get("misclassified_samples", [])
     if not samples:
         raise SystemExit(f"No misclassified samples found in: {json_path}")
 
-    # ensure subfolders exist
+    # Pre-create all category subfolders
     for cat in categories + ["unknown"]:
         (out_dir / cat).mkdir(parents=True, exist_ok=True)
 
@@ -94,7 +106,11 @@ def _extract_images_from_log(
         if not b64:
             continue
 
-        distortion = sample.get("distortion_predicted") or sample.get("distortion_type") or "unknown"
+        distortion = (
+            sample.get("distortion_predicted")
+            or sample.get("distortion_type")
+            or "unknown"
+        )
         if distortion not in categories:
             distortion = "unknown"
 
@@ -104,15 +120,14 @@ def _extract_images_from_log(
             continue
 
         try:
-            img_bytes = base64.b64decode(b64)
-            with open(out_path, "wb") as f:
-                f.write(img_bytes)
+            out_path.write_bytes(base64.b64decode(b64))
         except Exception:
-            # skip problematic samples
-            continue
+            continue  # skip corrupt entries
 
     return out_dir
 
+
+# ── Feature extraction ────────────────────────────────────────────────────────
 
 def _extract_features(
     image_paths: List[Path],
@@ -121,16 +136,19 @@ def _extract_features(
     device: torch.device,
     batch_size: int = 32,
 ) -> np.ndarray:
+    """Run images through *model* in batches and return stacked feature vectors."""
     model.eval()
     features = []
     with torch.no_grad():
         for i in range(0, len(image_paths), batch_size):
-            batch_paths = image_paths[i : i + batch_size]
-            batch_imgs = torch.stack([_load_and_preprocess(p, transform) for p in batch_paths]).to(device)
-            out = model(batch_imgs)
-            features.append(out.cpu().numpy())
-    return np.concatenate(features, axis=0) if features else np.zeros((0, model.fc.in_features))
+            batch = torch.stack(
+                [_load_and_preprocess(p, transform) for p in image_paths[i : i + batch_size]]
+            ).to(device)
+            features.append(model(batch).cpu().numpy())
+    return np.concatenate(features, axis=0) if features else np.zeros((0,))
 
+
+# ── Archetype selection ───────────────────────────────────────────────────────
 
 def _select_archetypes(
     embeddings: np.ndarray,
@@ -139,152 +157,141 @@ def _select_archetypes(
     paths: List[Path],
     choose_k: int = 3,
 ) -> Dict[str, Dict[str, List[Tuple[str, float]]]]:
-    report = {}
+    """For each category, pick the *choose_k* most-typical and most-outlier samples.
+
+    Typicality is measured by distance to the per-category centroid in embedding
+    space: smaller distance → more typical; larger → more outlier.
+    """
+    report: Dict[str, Dict[str, List[Tuple[str, float]]]] = {}
     for cat in categories:
-        idx = [i for i, l in enumerate(labels) if l == cat]
-        if len(idx) == 0:
-            report[cat] = {
-                'typical': [],
-                'outlier': [],
-            }
+        cat_idx = [i for i, lbl in enumerate(labels) if lbl == cat]
+        if not cat_idx:
+            report[cat] = {"typical": [], "outlier": []}
             continue
 
-        cat_embeddings = embeddings[idx]
-        centroid = np.mean(cat_embeddings, axis=0)
-        dists = np.linalg.norm(cat_embeddings - centroid[None, :], axis=1)
+        cat_emb = embeddings[cat_idx]
+        centroid = cat_emb.mean(axis=0)
+        dists = np.linalg.norm(cat_emb - centroid, axis=1)
         order = np.argsort(dists)
-
-        # handle limited case
-        n = len(order)
-        k = min(choose_k, n)
-
-        typical_idx = order[:k]
-        outlier_idx = order[-k:][::-1]
+        k = min(choose_k, len(order))
 
         report[cat] = {
-            'typical': [
-                (str(paths[idx[i]]), float(dists[i])) for i in typical_idx
-            ],
-            'outlier': [
-                (str(paths[idx[i]]), float(dists[i])) for i in outlier_idx
-            ],
+            "typical": [(str(paths[cat_idx[i]]), float(dists[i])) for i in order[:k]],
+            "outlier":  [(str(paths[cat_idx[i]]), float(dists[i])) for i in order[-k:][::-1]],
         }
     return report
 
+
+# ── Plotting ──────────────────────────────────────────────────────────────────
 
 def _draw_cluster_plot(
     embeddings: np.ndarray,
     labels: List[str],
     archetypes: Dict[str, Dict[str, List[Tuple[str, float]]]],
-    all_paths_map: Dict[Path, int],
+    path_to_index: Dict[Path, int],
     output_path: Path,
     dpi: int = 200,
-):
-    plt.figure(figsize=(12, 10), dpi=dpi)
-
+) -> None:
+    """Save a 2-D scatter plot of the t-SNE embeddings with archetype markers."""
+    palette = plt.get_cmap("tab10")
     unique_labels = sorted(set(labels))
-    palette = plt.get_cmap('tab10')
+    label_to_color_idx = {lbl: i for i, lbl in enumerate(unique_labels)}
 
-    label_to_idx = {lbl: i for i, lbl in enumerate(unique_labels)}
-    xs = embeddings[:, 0]
-    ys = embeddings[:, 1]
-    cs = [palette(label_to_idx[l] % 10) for l in labels]
+    xs, ys = embeddings[:, 0], embeddings[:, 1]
+    cs = [palette(label_to_color_idx[lbl] % 10) for lbl in labels]
 
-    plt.scatter(xs, ys, c=cs, s=18, alpha=0.7, edgecolors='none')
+    plt.figure(figsize=(12, 10), dpi=dpi)
+    plt.scatter(xs, ys, c=cs, s=18, alpha=0.7, edgecolors="none")
 
-    # overlay archetypes
+    # Overlay archetype markers: ★ = typical, ✕ = outlier
     for cat, ar in archetypes.items():
-        color = palette(label_to_idx.get(cat, 0) % 10)
-        for typ in ar.get('typical', []):
-            # find index in the global list
-            fp = Path(typ[0])
-            if fp in all_paths_map:
-                i = all_paths_map[fp]
-                plt.scatter(xs[i], ys[i], marker='*', s=150, c=[color], edgecolor='k', linewidth=0.7)
-        for out in ar.get('outlier', []):
-            fp = Path(out[0])
-            if fp in all_paths_map:
-                i = all_paths_map[fp]
-                plt.scatter(xs[i], ys[i], marker='X', s=150, c=[color], edgecolor='k', linewidth=0.7)
+        color = [palette(label_to_color_idx.get(cat, 0) % 10)]
+        for path_str, _ in ar.get("typical", []):
+            idx = path_to_index.get(Path(path_str))
+            if idx is not None:
+                plt.scatter(xs[idx], ys[idx], marker="*", s=150, c=color, edgecolor="k", linewidth=0.7)
+        for path_str, _ in ar.get("outlier", []):
+            idx = path_to_index.get(Path(path_str))
+            if idx is not None:
+                plt.scatter(xs[idx], ys[idx], marker="X", s=150, c=color, edgecolor="k", linewidth=0.7)
 
-    plt.xlabel('PCA component 1')
-    plt.ylabel('PCA component 2')
-    plt.title('Distortion cluster map (t-SNE on ResNet features)')
-    plt.legend(unique_labels, title='Distortion', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.xlabel("t-SNE component 1")
+    plt.ylabel("t-SNE component 2")
+    plt.title("Distortion cluster map (t-SNE on ResNet18 features)")
+    plt.legend(unique_labels, title="Distortion", bbox_to_anchor=(1.05, 1), loc="upper left")
     plt.tight_layout()
     plt.savefig(output_path)
     plt.close()
 
 
+# ── Report serialisation ──────────────────────────────────────────────────────
+
 def _build_report(
     archetypes: Dict[str, Dict[str, List[Tuple[str, float]]]],
 ) -> Dict:
+    """Convert archetype tuples into a JSON-serialisable dict."""
     summary = {}
     for cat, ar in archetypes.items():
         summary[cat] = {
-            'typical': [
-                {'file': p, 'distance': d} for p, d in ar.get('typical', [])
-            ],
-            'outlier': [
-                {'file': p, 'distance': d} for p, d in ar.get('outlier', [])
-            ],
-            'note': (
-                "Typical images represent the core of the distortion cluster (closest to centroid). "
-                "Outliers are those that deviate the most; they are either mislabeled or show mixed/ambiguous distortions."
+            "typical": [{"file": p, "distance": d} for p, d in ar.get("typical", [])],
+            "outlier":  [{"file": p, "distance": d} for p, d in ar.get("outlier", [])],
+            "note": (
+                "Typical images are closest to the cluster centroid. "
+                "Outliers deviate the most and may be mislabelled or show mixed distortions."
             ),
         }
-    return {'archetypes': summary, 'generated_at': datetime.datetime.now().isoformat()}
+    return {"archetypes": summary, "generated_at": datetime.datetime.now().isoformat()}
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Generate a distortion diagnostic report.')
-    parser.add_argument(
-        '--base-dir',
-        required=True,
-        type=Path,
-        help='Base directory containing distortion subfolders (blur/jpeg/pixelate/noise), or a misclassified JSON log file',
+# ── Entry point ───────────────────────────────────────────────────────────────
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate a distortion diagnostic report.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument('--output', required=True, type=Path, help='Output JSON report file')
-    parser.add_argument('--plot', required=True, type=Path, help='Output cluster plot image (PNG)')
-    parser.add_argument('--dry-run', action='store_true', help='Run without requiring many images (uses what is available)')
-    parser.add_argument('--max-samples', type=int, default=1000, help='Max total images to process (for speed)')
+    parser.add_argument(
+        "--base-dir", required=True, type=Path,
+        help="Distortion subfolder root (blur/jpeg/pixelate/noise), or a misclassified JSON log",
+    )
+    parser.add_argument("--output",      required=True, type=Path, help="Output JSON report path")
+    parser.add_argument("--plot",        required=True, type=Path, help="Output cluster plot (PNG)")
+    parser.add_argument("--dry-run",     action="store_true",       help="Process whatever images are available")
+    parser.add_argument("--max-samples", type=int, default=1000,    help="Max total images to process")
     args = parser.parse_args()
 
-    # Ensure output directories exist
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.plot.parent.mkdir(parents=True, exist_ok=True)
 
-    categories = ['blur', 'jpeg', 'pixelate', 'noise']
-
-    # If a JSON log is provided, extract images into a temporary structure first.
-    if args.base_dir.is_file() and args.base_dir.suffix.lower() == '.json':
+    # If a JSON log is supplied, decode its embedded images onto disk first
+    if args.base_dir.is_file() and args.base_dir.suffix.lower() == ".json":
         extracted_dir = args.base_dir.parent / f"{args.base_dir.stem}_images"
-        print(f"Extracting images from misclassified log: {args.base_dir} -> {extracted_dir}")
-        args.base_dir = _extract_images_from_log(args.base_dir, extracted_dir, categories)
+        print(f"Extracting images from log: {args.base_dir} → {extracted_dir}")
+        args.base_dir = _extract_images_from_log(args.base_dir, extracted_dir, CATEGORIES)
 
-    images = _get_image_paths(args.base_dir, categories)
+    # ── Collect image paths ───────────────────────────────────────────────────
+    images = _get_image_paths(args.base_dir, CATEGORIES)
 
-    # Build global list, controlling max samples
-    global all_paths_map
-    all_paths = []
-    all_labels = []
-    for cat in categories:
+    all_paths: List[Path] = []
+    all_labels: List[str] = []
+    for cat in CATEGORIES:
         cat_paths = images.get(cat, [])
-        if args.max_samples and len(all_paths) < args.max_samples:
+        if args.max_samples:
             remaining = args.max_samples - len(all_paths)
             cat_paths = cat_paths[:remaining]
         all_paths.extend(cat_paths)
         all_labels.extend([cat] * len(cat_paths))
 
     if not all_paths:
-        raise SystemExit('No images found. Ensure the directory structure and image files exist.')
+        raise SystemExit("No images found. Check that the directory structure and image files exist.")
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # ── Feature extraction ────────────────────────────────────────────────────
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}  |  images: {len(all_paths)}")
 
-    # Pretrained feature extractor (ResNet18 without final classification)
-    model = models.resnet18(pretrained=True)
-    model = nn.Sequential(*(list(model.children())[:-1]))  # remove classifier
-    model.eval().to(device)
+    backbone = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+    backbone = nn.Sequential(*list(backbone.children())[:-1])  # strip classifier head
+    backbone.eval().to(device)
 
     transform = T.Compose([
         T.Resize((224, 224)),
@@ -292,33 +299,26 @@ if __name__ == '__main__':
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
 
-    # Extract features
-    features = _extract_features(all_paths, model, transform, device)
-    features = features.reshape(features.shape[0], -1)
+    print("Extracting ResNet18 features…")
+    features = _extract_features(all_paths, backbone, transform, device).reshape(len(all_paths), -1)
 
-    # Reduce dimensions: PCA -> t-SNE
-    pca = PCA(n_components=50)
-    pca_feats = pca.fit_transform(features)
+    # ── Dimensionality reduction: PCA → t-SNE ─────────────────────────────────
+    print("Running PCA (50 components) + t-SNE…")
+    pca_feats  = PCA(n_components=50).fit_transform(features)
+    embeddings = TSNE(n_components=2, init="pca", random_state=42, learning_rate="auto").fit_transform(pca_feats)
 
-    tsne = TSNE(n_components=2, init='pca', random_state=42, learning_rate='auto')
-    embeddings = tsne.fit_transform(pca_feats)
+    # ── Archetype selection + plot ────────────────────────────────────────────
+    path_to_index = {p: i for i, p in enumerate(all_paths)}
+    archetypes    = _select_archetypes(embeddings, all_labels, CATEGORIES, all_paths)
+    _draw_cluster_plot(embeddings, all_labels, archetypes, path_to_index, args.plot)
 
-    # Build index map for plotting
-    all_paths_map = {p: i for i, p in enumerate(all_paths)}
-
-    archetypes = _select_archetypes(embeddings, all_labels, categories, all_paths)
-
-    _draw_cluster_plot(embeddings, all_labels, archetypes, all_paths_map, args.plot)
-
+    # ── Write JSON report ─────────────────────────────────────────────────────
     report = _build_report(archetypes)
+    args.output.write_text(json.dumps(report, indent=2))
 
-    with open(args.output, 'w') as f:
-        json.dump(report, f, indent=2)
+    print(f"Report  → {args.output}")
+    print(f"Cluster plot → {args.plot}")
 
-    print('Report written to:', args.output)
-    print('Cluster plot written to:', args.plot)
 
-# python pipe/distortion_diagnostic_report.py \
-#   --base-dir pipe/misclassified \
-#   --output pipe/reports/distortion_report.json \
-#   --plot pipe/reports/distortion_clusters.png
+if __name__ == "__main__":
+    main()
