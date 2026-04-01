@@ -596,3 +596,405 @@ Distortion: NOISE
 2026-03-17 03:25:11,100 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
 2026-03-17 03:25:11,102 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:436) -      sections found: ['DISTORTION ARTIFACTS', 'SURVIVING TRUE-CLASS FEATURES', 'WHAT MISLED THE MODEL', 'MODEL REASONING CORRECT', 'MODEL REASONING INCORRECT', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
 2026-03-17 03:25:11,104 - [INFO] - VisionDev - (pipe/vision_reasoning_report.py:670) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary.md
+2026-03-23 21:10:31,423 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:825) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260323_210010.json
+2026-03-23 21:10:31,436 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:830) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260323_210010.json
+2026-03-23 21:10:31,437 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:835) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-23 21:10:31,437 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:843) - Loading training summary…
+2026-03-23 21:10:31,515 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:846) - Loading misclassified stats…
+2026-03-23 21:10:31,552 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:849) - Loading distortion report…
+2026-03-23 21:10:31,573 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:328) - vLLM server is ready.
+2026-03-23 21:10:31,573 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:860) - Building LLM → http://localhost:8000/v1  model=Qwen/Qwen2.5-VL-7B-Instruct
+2026-03-23 21:10:36,804 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: BLUR
+2026-03-23 21:10:36,805 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:10:36,806 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for blur — visual grounding (no labels)
+2026-03-23 21:11:10,706 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:11:10,715 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (2680 chars)
+2026-03-23 21:11:10,716 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:11:10,814 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-03-23 21:11:10,815 - [WARNING] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:535) -   [Turn 2] FAILED for blur: Error code: 400 - {'error': {'message': "'max_tokens' or 'max_completion_tokens' is too large: 1500. This model's maximum context length is 2048 tokens and your request has 985 input tokens (1500 > 2048 - 985). None", 'type': 'BadRequestError', 'param': None, 'code': 400}}
+2026-03-23 21:11:10,847 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: JPEG
+2026-03-23 21:11:10,848 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:11:10,848 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for jpeg — visual grounding (no labels)
+2026-03-23 21:11:20,684 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:11:20,685 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (1754 chars)
+2026-03-23 21:11:20,686 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:11:20,699 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-03-23 21:11:20,700 - [WARNING] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:535) -   [Turn 2] FAILED for jpeg: Error code: 400 - {'error': {'message': "'max_tokens' or 'max_completion_tokens' is too large: 1500. This model's maximum context length is 2048 tokens and your request has 838 input tokens (1500 > 2048 - 838). None", 'type': 'BadRequestError', 'param': None, 'code': 400}}
+2026-03-23 21:11:20,700 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: PIXELATE
+2026-03-23 21:11:20,701 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:11:20,701 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for pixelate — visual grounding (no labels)
+2026-03-23 21:11:31,717 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:11:31,719 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (2213 chars)
+2026-03-23 21:11:31,719 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:11:31,770 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-03-23 21:11:31,771 - [WARNING] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:535) -   [Turn 2] FAILED for pixelate: Error code: 400 - {'error': {'message': "'max_tokens' or 'max_completion_tokens' is too large: 1500. This model's maximum context length is 2048 tokens and your request has 900 input tokens (1500 > 2048 - 900). None", 'type': 'BadRequestError', 'param': None, 'code': 400}}
+2026-03-23 21:11:31,772 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: NOISE
+2026-03-23 21:11:31,772 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:11:31,773 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for noise — visual grounding (no labels)
+2026-03-23 21:11:43,574 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:11:43,575 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (2259 chars)
+2026-03-23 21:11:43,576 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:11:43,590 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-03-23 21:11:43,590 - [WARNING] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:535) -   [Turn 2] FAILED for noise: Error code: 400 - {'error': {'message': "'max_tokens' or 'max_completion_tokens' is too large: 1500. This model's maximum context length is 2048 tokens and your request has 916 input tokens (1500 > 2048 - 916). None", 'type': 'BadRequestError', 'param': None, 'code': 400}}
+2026-03-23 21:11:43,591 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:889) - 
+Total VLM calls made: 8  (vs 12 in v1 with same --samples)
+2026-03-23 21:11:43,592 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:780) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary_v2.md
+2026-03-23 21:16:08,394 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:825) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260323_210010.json
+2026-03-23 21:16:08,394 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:830) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260323_210010.json
+2026-03-23 21:16:08,395 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:835) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-23 21:16:08,395 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:843) - Loading training summary…
+2026-03-23 21:16:08,451 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:846) - Loading misclassified stats…
+2026-03-23 21:16:08,489 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:849) - Loading distortion report…
+2026-03-23 21:16:08,510 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:328) - vLLM server is ready.
+2026-03-23 21:16:08,510 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:860) - Building LLM → http://localhost:8000/v1  model=Qwen/Qwen2.5-VL-7B-Instruct
+2026-03-23 21:16:08,740 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: BLUR
+2026-03-23 21:16:08,740 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:16:08,741 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for blur — visual grounding (no labels)
+2026-03-23 21:16:41,797 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:16:41,802 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (2680 chars)
+2026-03-23 21:16:41,802 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:16:51,944 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:16:51,946 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:533) -   [Turn 2] Sections parsed: ['_raw']
+2026-03-23 21:16:51,946 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: JPEG
+2026-03-23 21:16:51,947 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:16:51,947 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for jpeg — visual grounding (no labels)
+2026-03-23 21:17:02,580 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:17:02,582 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (1861 chars)
+2026-03-23 21:17:02,582 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:17:12,964 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:17:12,966 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:533) -   [Turn 2] Sections parsed: ['_raw']
+2026-03-23 21:17:12,966 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: PIXELATE
+2026-03-23 21:17:12,967 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:17:12,967 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for pixelate — visual grounding (no labels)
+2026-03-23 21:17:21,612 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:17:21,614 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (1558 chars)
+2026-03-23 21:17:21,614 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:17:31,499 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:17:31,500 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:533) -   [Turn 2] Sections parsed: ['SHARED FAILURE PATTERN', 'TYPICAL VS OUTLIER', 'WHAT MISLED THE MODEL', 'CONFIDENCE ASSESSMENT', 'ROOT CAUSE']
+2026-03-23 21:17:31,501 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:868) - 
+────────────────────────────────────────────────────────────
+Distortion: NOISE
+2026-03-23 21:17:31,501 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:878) -   Sampled 3 image(s).
+2026-03-23 21:17:31,501 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:510) -   [Turn 1] Sending 3 image(s) for noise — visual grounding (no labels)
+2026-03-23 21:17:40,707 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:17:40,709 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:517) -   [Turn 1] Response received (1641 chars)
+2026-03-23 21:17:40,709 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:525) -   [Turn 2] Sending 3 image(s) + Turn 1 output — causal reasoning (labels revealed)
+2026-03-23 21:17:49,582 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:17:49,583 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:533) -   [Turn 2] Sections parsed: ['_raw']
+2026-03-23 21:17:49,583 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:889) - 
+Total VLM calls made: 8  (vs 12 in v1 with same --samples)
+2026-03-23 21:17:49,584 - [INFO] - VisionDev - (pipe/v2/vision_reasoning_report_v2.py:780) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary_v2.md
+2026-03-23 21:39:58,386 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:136) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260323_213918.json
+2026-03-23 21:39:58,386 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:141) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260323_213918.json
+2026-03-23 21:39:58,387 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:146) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-23 21:39:58,387 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:154) - Loading training summary…
+2026-03-23 21:39:58,440 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:157) - Loading misclassified stats…
+2026-03-23 21:39:58,476 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:160) - Loading distortion report…
+2026-03-23 21:39:58,477 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:166) - Building / loading RAG index…
+2026-03-23 21:40:03,344 - [INFO] - VisionDev - (pipe/v3/server_utils.py:36) - vLLM server is ready.
+2026-03-23 21:40:03,344 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:189) - Building LLM → http://localhost:8000/v1
+2026-03-23 21:40:03,585 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: BLUR
+2026-03-23 21:40:03,587 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 21:40:03,587 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] blur — Turn 1 (3 images)
+2026-03-23 21:40:16,009 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:16,014 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2385 chars)
+2026-03-23 21:40:16,014 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 1
+2026-03-23 21:40:22,409 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:22,428 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:40:22,428 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-23 21:40:22,429 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 80% of blur failures in epoch 0 — model never learned to handle this distortion 
+2026-03-23 21:40:22,429 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 2
+2026-03-23 21:40:26,503 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:26,514 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:40:26,515 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-23 21:40:26,515 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] blur — structured output ready. Root cause: The uniform blur affecting the edges and corners causes the model to misinterpre…
+2026-03-23 21:40:26,515 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: JPEG
+2026-03-23 21:40:26,517 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 21:40:26,518 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] jpeg — Turn 1 (3 images)
+2026-03-23 21:40:34,836 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:34,837 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1198 chars)
+2026-03-23 21:40:34,837 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 1
+2026-03-23 21:40:40,183 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:40,195 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:40:40,195 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-23 21:40:40,196 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 83% of jpeg failures in epoch 0 — model never learned to handle this distortion 
+2026-03-23 21:40:40,196 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 2
+2026-03-23 21:40:44,127 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:44,136 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:40:44,137 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-23 21:40:44,137 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] jpeg — structured output ready. Root cause: The speckle pattern in the top-left corner visually confuses the model into pred…
+2026-03-23 21:40:44,137 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: PIXELATE
+2026-03-23 21:40:44,139 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 21:40:44,139 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] pixelate — Turn 1 (3 images)
+2026-03-23 21:40:53,887 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:53,889 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1762 chars)
+2026-03-23 21:40:53,889 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 1
+2026-03-23 21:40:58,051 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:40:58,056 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:40:58,056 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-23 21:40:58,056 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 83% of pixelate failures in epoch 0 — model never learned to handle this distort
+2026-03-23 21:40:58,057 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 2
+2026-03-23 21:41:02,589 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:41:02,601 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:41:02,601 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-23 21:41:02,602 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] pixelate — structured output ready. Root cause: The 8×8 block grid pixelation activates the model's misclassification due to its…
+2026-03-23 21:41:02,602 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: NOISE
+2026-03-23 21:41:02,604 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 21:41:02,604 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] noise — Turn 1 (3 images)
+2026-03-23 21:41:16,569 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:41:16,570 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2460 chars)
+2026-03-23 21:41:16,571 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 1
+2026-03-23 21:41:20,932 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:41:20,943 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:41:20,943 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-23 21:41:20,944 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 83% of noise failures in epoch 0 — model never learned to handle this distortion
+2026-03-23 21:41:20,944 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 2
+2026-03-23 21:41:25,363 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:41:25,375 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 21:41:25,375 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-23 21:41:25,376 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] noise — structured output ready. Root cause: The speckle pattern noise activates the wrong class prediction due to visual sim…
+2026-03-23 21:41:25,376 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:227) - 
+Total VLM calls: 12
+2026-03-23 21:41:25,376 - [INFO] - VisionDev - (pipe/v3/renderer.py:54) -   [renderer] Generating dynamic recommendations via LLM…
+2026-03-23 21:41:42,730 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 21:41:42,802 - [INFO] - VisionDev - (pipe/v3/renderer.py:72) -   [renderer] 5 recommendations parsed (Pydantic).
+2026-03-23 21:41:42,803 - [INFO] - VisionDev - (pipe/v3/renderer.py:400) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary_v3.md
+2026-03-23 23:12:04,898 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:136) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260323_231145.json
+2026-03-23 23:12:04,899 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:141) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260323_231145.json
+2026-03-23 23:12:04,899 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:146) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-23 23:12:04,899 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:154) - Loading training summary…
+2026-03-23 23:12:04,953 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:157) - Loading misclassified stats…
+2026-03-23 23:12:04,990 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:160) - Loading distortion report…
+2026-03-23 23:12:04,990 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:166) - Building / loading RAG index…
+2026-03-23 23:12:12,246 - [INFO] - VisionDev - (pipe/v3/server_utils.py:36) - vLLM server is ready.
+2026-03-23 23:12:12,247 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:189) - Building LLM → http://localhost:8000/v1
+2026-03-23 23:12:12,474 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: BLUR
+2026-03-23 23:12:12,476 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:12:12,476 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] blur — Turn 1 (3 images)
+2026-03-23 23:12:43,227 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:12:43,233 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2444 chars)
+2026-03-23 23:12:43,233 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 1
+2026-03-23 23:12:47,450 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:12:47,460 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:12:47,461 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-23 23:12:47,461 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 82% of blur failures in epoch 0 — model never learned to handle this distortion 
+2026-03-23 23:12:47,461 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 2
+2026-03-23 23:12:51,534 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:12:51,544 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:12:51,545 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-23 23:12:51,545 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] blur — structured output ready. Root cause: Blurred edges and corners activate the wrong class prediction due to visual rese…
+2026-03-23 23:12:51,545 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: JPEG
+2026-03-23 23:12:51,556 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:12:51,557 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] jpeg — Turn 1 (3 images)
+2026-03-23 23:13:07,685 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:07,686 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2888 chars)
+2026-03-23 23:13:07,686 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 1
+2026-03-23 23:13:11,793 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:11,803 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:13:11,804 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-23 23:13:11,804 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 78% of jpeg failures in epoch 0 — model never learned to handle this distortion 
+2026-03-23 23:13:11,804 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 2
+2026-03-23 23:13:15,951 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:15,963 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:13:15,963 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-23 23:13:15,963 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] jpeg — structured output ready. Root cause: The model confuses the subtle visual cues caused by JPEG compression artifacts w…
+2026-03-23 23:13:15,964 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: PIXELATE
+2026-03-23 23:13:15,971 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:13:15,971 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] pixelate — Turn 1 (3 images)
+2026-03-23 23:13:25,477 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:25,479 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1767 chars)
+2026-03-23 23:13:25,479 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 1
+2026-03-23 23:13:29,604 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:29,614 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:13:29,614 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-23 23:13:29,614 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 81% of pixelate failures in epoch 0 — model never learned to handle this distort
+2026-03-23 23:13:29,615 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 2
+2026-03-23 23:13:33,628 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:33,638 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:13:33,638 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-23 23:13:33,638 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] pixelate — structured output ready. Root cause: The speckle pattern in the background and edges visually confuses the model into…
+2026-03-23 23:13:33,639 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: NOISE
+2026-03-23 23:13:33,642 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:13:33,642 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] noise — Turn 1 (3 images)
+2026-03-23 23:13:43,545 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:43,547 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1816 chars)
+2026-03-23 23:13:43,547 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 1
+2026-03-23 23:13:48,188 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:48,199 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:13:48,200 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-23 23:13:48,200 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 82% of noise failures in epoch 0 — model never learned to handle this distortion
+2026-03-23 23:13:48,200 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 2
+2026-03-23 23:13:52,837 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:13:52,849 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:13:52,849 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-23 23:13:52,850 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] noise — structured output ready. Root cause: The speckle pattern noise visually confuses the model by resembling the texture …
+2026-03-23 23:13:52,850 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:227) - 
+Total VLM calls: 12
+2026-03-23 23:13:52,850 - [INFO] - VisionDev - (pipe/v3/renderer.py:54) -   [renderer] Generating dynamic recommendations via LLM…
+2026-03-23 23:14:10,504 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:14:10,581 - [INFO] - VisionDev - (pipe/v3/renderer.py:72) -   [renderer] 5 recommendations parsed (Pydantic).
+2026-03-23 23:14:10,582 - [INFO] - VisionDev - (pipe/v3/renderer.py:400) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary_v3.md
+2026-03-23 23:41:14,570 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:136) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260323_231145.json
+2026-03-23 23:41:14,571 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:141) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260323_231145.json
+2026-03-23 23:41:14,571 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:146) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-23 23:41:14,571 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:154) - Loading training summary…
+2026-03-23 23:41:14,624 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:157) - Loading misclassified stats…
+2026-03-23 23:41:14,662 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:160) - Loading distortion report…
+2026-03-23 23:41:14,662 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:166) - Building / loading RAG index…
+2026-03-23 23:41:21,801 - [INFO] - VisionDev - (pipe/v3/server_utils.py:36) - vLLM server is ready.
+2026-03-23 23:41:21,801 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:189) - Building LLM → http://localhost:8000/v1
+2026-03-23 23:41:22,026 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: BLUR
+2026-03-23 23:41:22,028 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:41:22,028 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] blur — Turn 1 (3 images)
+2026-03-23 23:41:35,632 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:41:35,639 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2698 chars)
+2026-03-23 23:41:35,640 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 1
+2026-03-23 23:41:40,362 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:41:40,375 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:41:40,375 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-23 23:41:40,375 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 82% of blur failures in epoch 0 — model never learned to handle this distortion 
+2026-03-23 23:41:40,376 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 2
+2026-03-23 23:41:44,703 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:41:44,715 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:41:44,715 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-23 23:41:44,715 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] blur — structured output ready. Root cause: The uniform blur causes the model to misinterpret the image as belonging to the …
+2026-03-23 23:41:44,716 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: JPEG
+2026-03-23 23:41:44,726 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:41:44,726 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] jpeg — Turn 1 (3 images)
+2026-03-23 23:41:57,299 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:41:57,300 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2267 chars)
+2026-03-23 23:41:57,301 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 1
+2026-03-23 23:42:01,563 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:01,574 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:42:01,574 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-23 23:42:01,575 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 78% of jpeg failures in epoch 0 — model never learned to handle this distortion 
+2026-03-23 23:42:01,575 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 2
+2026-03-23 23:42:05,745 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:05,756 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:42:05,756 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-23 23:42:05,756 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] jpeg — structured output ready. Root cause: The 8x8 block grid pattern in the background visually resembles the silhouette o…
+2026-03-23 23:42:05,757 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: PIXELATE
+2026-03-23 23:42:05,763 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:42:05,764 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] pixelate — Turn 1 (3 images)
+2026-03-23 23:42:14,645 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:14,647 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1601 chars)
+2026-03-23 23:42:14,647 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 1
+2026-03-23 23:42:19,109 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:19,121 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:42:19,122 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-23 23:42:19,122 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 81% of pixelate failures in epoch 0 — model never learned to handle this distort
+2026-03-23 23:42:19,122 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 2
+2026-03-23 23:42:23,293 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:23,304 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:42:23,304 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-23 23:42:23,305 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] pixelate — structured output ready. Root cause: The block grid pixelate degradation activates the wrong class prediction by visu…
+2026-03-23 23:42:23,305 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: NOISE
+2026-03-23 23:42:23,308 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-23 23:42:23,309 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] noise — Turn 1 (3 images)
+2026-03-23 23:42:34,650 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:34,652 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1949 chars)
+2026-03-23 23:42:34,652 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 1
+2026-03-23 23:42:38,505 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:38,515 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:42:38,515 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-23 23:42:38,516 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 82% of noise failures in epoch 0 — model never learned to handle this distortion
+2026-03-23 23:42:38,516 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 2
+2026-03-23 23:42:42,519 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:42,529 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-23 23:42:42,529 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-23 23:42:42,530 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] noise — structured output ready. Root cause: The speckle pattern noise in the top-left corner visually confuses the model int…
+2026-03-23 23:42:42,530 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:227) - 
+Total VLM calls: 12
+2026-03-23 23:42:42,530 - [INFO] - VisionDev - (pipe/v3/renderer.py:55) -   [renderer] Generating dynamic recommendations via LLM…
+2026-03-23 23:42:58,254 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-23 23:42:58,325 - [INFO] - VisionDev - (pipe/v3/renderer.py:73) -   [renderer] 5 recommendations parsed (Pydantic).
+2026-03-23 23:42:58,334 - [INFO] - VisionDev - (pipe/v3/renderer.py:457) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary_v3.md
+2026-03-24 00:07:38,030 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:136) - Training log  : /mnt/data/vision_dev_project/pipe/logs/training_log_20260323_231145.json
+2026-03-24 00:07:38,031 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:141) - Misclassified : /mnt/data/vision_dev_project/pipe/logs/misclassified_20260323_231145.json
+2026-03-24 00:07:38,031 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:146) - Distortion report: /mnt/data/vision_dev_project/pipe/reports/distortion_report.json
+2026-03-24 00:07:38,032 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:154) - Loading training summary…
+2026-03-24 00:07:38,085 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:157) - Loading misclassified stats…
+2026-03-24 00:07:38,123 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:160) - Loading distortion report…
+2026-03-24 00:07:38,123 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:166) - Building / loading RAG index…
+2026-03-24 00:07:45,399 - [INFO] - VisionDev - (pipe/v3/server_utils.py:36) - vLLM server is ready.
+2026-03-24 00:07:45,400 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:189) - Building LLM → http://localhost:8000/v1
+2026-03-24 00:07:45,637 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: BLUR
+2026-03-24 00:07:45,638 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-24 00:07:45,639 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] blur — Turn 1 (3 images)
+2026-03-24 00:07:58,308 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:07:58,314 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2255 chars)
+2026-03-24 00:07:58,314 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 1
+2026-03-24 00:08:02,751 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:02,762 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:02,762 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-24 00:08:02,763 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 82% of blur failures in epoch 0 — model never learned to handle this distortion 
+2026-03-24 00:08:02,763 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] blur — Turn 2 iteration 2
+2026-03-24 00:08:08,514 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:08,529 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:08,530 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] blur — running tool calls
+2026-03-24 00:08:08,530 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] blur — structured output ready. Root cause: The speckle pattern in the center of the images activates the model's misclassif…
+2026-03-24 00:08:08,530 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: JPEG
+2026-03-24 00:08:08,541 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-24 00:08:08,541 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] jpeg — Turn 1 (3 images)
+2026-03-24 00:08:17,852 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:17,854 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1463 chars)
+2026-03-24 00:08:17,854 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 1
+2026-03-24 00:08:21,950 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:21,961 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:21,961 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-24 00:08:21,961 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 78% of jpeg failures in epoch 0 — model never learned to handle this distortion 
+2026-03-24 00:08:21,962 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] jpeg — Turn 2 iteration 2
+2026-03-24 00:08:27,465 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:27,482 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:27,482 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] jpeg — running tool calls
+2026-03-24 00:08:27,483 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] jpeg — structured output ready. Root cause: The speckle pattern in JPEG compression causes the model to confuse the texture …
+2026-03-24 00:08:27,483 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: PIXELATE
+2026-03-24 00:08:27,490 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-24 00:08:27,490 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] pixelate — Turn 1 (3 images)
+2026-03-24 00:08:36,469 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:36,470 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (1647 chars)
+2026-03-24 00:08:36,471 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 1
+2026-03-24 00:08:40,897 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:40,910 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:40,910 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-24 00:08:40,911 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 81% of pixelate failures in epoch 0 — model never learned to handle this distort
+2026-03-24 00:08:40,911 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] pixelate — Turn 2 iteration 2
+2026-03-24 00:08:44,812 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:44,822 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:44,822 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] pixelate — running tool calls
+2026-03-24 00:08:44,822 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] pixelate — structured output ready. Root cause: The mosaic tile pattern in the center and background areas visually resembles th…
+2026-03-24 00:08:44,823 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:200) - Distortion: NOISE
+2026-03-24 00:08:44,826 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:214) -   3 image(s) after dedup.
+2026-03-24 00:08:44,826 - [INFO] - VisionDev - (pipe/v3/graph.py:102) -   [graph:observe] noise — Turn 1 (3 images)
+2026-03-24 00:08:56,054 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:56,055 - [INFO] - VisionDev - (pipe/v3/graph.py:105) -   [graph:observe] Turn 1 complete (2108 chars)
+2026-03-24 00:08:56,056 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 1
+2026-03-24 00:08:59,906 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:08:59,915 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:08:59,915 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-24 00:08:59,915 - [INFO] - VisionDev - (pipe/v3/graph.py:257) -   [graph:verify] Revision requested: 82% of noise failures in epoch 0 — model never learned to handle this distortion
+2026-03-24 00:08:59,916 - [INFO] - VisionDev - (pipe/v3/graph.py:129) -   [graph:hypothesise] noise — Turn 2 iteration 2
+2026-03-24 00:09:03,968 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:09:03,977 - [INFO] - VisionDev - (pipe/v3/graph.py:169) -   [graph:hypothesise] Pydantic parse succeeded.
+2026-03-24 00:09:03,978 - [INFO] - VisionDev - (pipe/v3/graph.py:202) -   [graph:verify] noise — running tool calls
+2026-03-24 00:09:03,978 - [INFO] - VisionDev - (pipe/v3/graph.py:279) -   [graph:conclude] noise — structured output ready. Root cause: The speckle pattern visually confuses the model into predicting the wrong class …
+2026-03-24 00:09:03,978 - [INFO] - VisionDev - (pipe/v3/vision_reasoning_report_v3.py:227) - 
+Total VLM calls: 12
+2026-03-24 00:09:03,979 - [INFO] - VisionDev - (pipe/v3/renderer.py:55) -   [renderer] Generating dynamic recommendations via LLM…
+2026-03-24 00:09:22,541 - [INFO] - httpx - (../../../home/pratik2/vision_dev_project/venv_vision/lib/python3.12/site-packages/httpx/_client.py:1025) - HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-24 00:09:22,621 - [INFO] - VisionDev - (pipe/v3/renderer.py:73) -   [renderer] 5 recommendations parsed (Pydantic).
+2026-03-24 00:09:22,635 - [INFO] - VisionDev - (pipe/v3/renderer.py:457) - Report written → /mnt/data/vision_dev_project/ai_reasoning_summary_v3.md
