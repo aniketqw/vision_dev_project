@@ -2,11 +2,11 @@
 
   A  held-out recipe test : injections from recipe.py, per-tag precision/recall/F1, clean specificity
   B  dose-response        : a DIFFERENT recipe (PIL, global, 5 severities) to check it generalises
-  C  failed vs correct    : tag rates on images the CNN gets wrong vs right (needs --probe-json or --cnn-ckpt)
+  C  failed vs correct    : tag rates on images the CNN gets wrong vs right (needs --probe-json or --predictions)
   D  stored failures      : re-tag a misclassified_*.json (needs --misclassified)
 
     python -m visiondev.tagger.evaluate --weights weights/tagger_v2.pt --out outputs/eval_new.json \
-        [--probe-json tag_probe_results.json | --cnn-ckpt model.ckpt] [--misclassified outputs/logs/misclassified_X.json]
+        [--probe-json tag_probe_results.json | --predictions preds.npy] [--misclassified outputs/logs/misclassified_X.json]
 """
 import argparse
 import base64
@@ -85,14 +85,9 @@ def test_b(T, test, n=200, levels=(1, 2, 3, 4, 5)):
     return out
 
 
-def failed_vs_correct_indices(test, ckpt, n=1500, seed=0):
-    import torch
-    from ..model import SimpleCNN
-    model = SimpleCNN.load_from_checkpoint(ckpt, map_location="cpu").eval()
-    x = torch.tensor(test.data).permute(0, 3, 1, 2).float() / 255
-    x = (x - 0.5) / 0.5
-    with torch.no_grad():
-        pred = torch.cat([model(x[i:i + 500]).argmax(1) for i in range(0, len(x), 500)]).numpy()
+def failed_vs_correct_indices(test, predictions_npy, n=1500, seed=0):
+    """predictions_npy: .npy of your model's predicted labels for the 10,000 CIFAR-10 test images."""
+    pred = np.load(predictions_npy)
     wrong = np.where(pred != np.array(test.targets))[0].tolist()
     right = np.where(pred == np.array(test.targets))[0].tolist()
     r = random.Random(seed)
@@ -132,7 +127,7 @@ def main():
     ap.add_argument("--imgsz", type=int, default=64)
     ap.add_argument("--conf", type=float, default=0.25)
     ap.add_argument("--probe-json", type=Path, help="JSON with rows.fail/rows.correct lists of {'idx': ...}")
-    ap.add_argument("--cnn-ckpt", help="SimpleCNN checkpoint; failed/correct images are chosen from its predictions")
+    ap.add_argument("--predictions", help=".npy of your model's predicted labels for the CIFAR-10 test set (for test C)")
     ap.add_argument("--misclassified", type=Path)
     a = ap.parse_args()
     T = Tagger(a.weights, imgsz=a.imgsz, conf=a.conf)
@@ -143,8 +138,8 @@ def main():
     if a.probe_json:
         rows = json.loads(a.probe_json.read_text())["rows"]
         groups = {g: [r["idx"] for r in rs] for g, rs in rows.items()}
-    elif a.cnn_ckpt:
-        groups = failed_vs_correct_indices(test, a.cnn_ckpt)
+    elif a.predictions:
+        groups = failed_vs_correct_indices(test, a.predictions)
     if groups:
         res["C_failed_vs_correct"] = test_c(T, test, groups)
     if a.misclassified:

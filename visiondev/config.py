@@ -21,10 +21,10 @@ CIFAR10_CLASSES = {
 }
 
 # ── default paths (relative to the folder you run the scripts from) ──────────
-OUTPUT_DIR          = Path("outputs")
-DEFAULT_LOGS_DIR    = OUTPUT_DIR / "logs"
-DEFAULT_REPORTS_DIR = OUTPUT_DIR / "reports"
-DEFAULT_TAGGER      = Path(__file__).resolve().parent.parent / "weights" / "tagger_v2.pt"
+OUTPUT_DIR          = Path("visiondev_runs")
+DEFAULT_LOGS_DIR    = OUTPUT_DIR
+DEFAULT_REPORTS_DIR = OUTPUT_DIR
+DEFAULT_TAGGER      = Path(__file__).resolve().parent / "weights" / "tagger_v2.pt"
 DEFAULT_RAG_INDEX   = DEFAULT_REPORTS_DIR / "rag_index.npz"
 
 # ── LLM settings ──────────────────────────────────────────────────────────────

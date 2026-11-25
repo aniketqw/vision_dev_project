@@ -1,11 +1,19 @@
-"""Lightning callback that records everything needed to debug a training run.
+"""Lightning callback: drop it into any image-classification Trainer and get a failure diagnosis.
 
-Per epoch it logs loss/accuracy/precision/recall/F1, per-class metrics, gradient norm, learning rate,
-epoch time and input statistics. For every misclassified validation image it stores the image (base64 PNG),
-true/predicted class and, if a tagger is given, the distortion tags. At the end it writes two files:
+    trainer = pl.Trainer(callbacks=[DebugLogger(diagnose=True)])
 
-  training_log_<ts>.json   metrics + misclassified samples (deduplicated by image hash, sorted by count)
-  misclassified_<ts>.json  the misclassified samples alone (input of the selection step)
+During training it logs loss/accuracy/precision/recall/F1, per-class metrics, gradient norm, learning rate,
+epoch time and input statistics. Every misclassified validation image is tagged by the distortion tagger
+(blur / noise / pixelate / jpeg / none). When training ends it writes, into one run folder:
+
+  training_log_<ts>.json            metrics + misclassified samples (deduplicated by hash, sorted by count)
+  misclassified_<ts>.json           the misclassified samples alone
+  misclassified_<ts>_images/<tag>/  the failure images, grouped by the tag the tagger gave them
+
+and, with diagnose=True, it then picks typical/outlier images per tag (ResNet18 -> PCA -> t-SNE), sends them
+to a vision-language model and writes report.md (see visiondev.pipeline).
+
+Expected batches: (images, labels) with images normalised to [-1, 1] (mean 0.5, std 0.5), RGB.
 """
 import base64
 import hashlib
@@ -15,7 +23,8 @@ import time
 from collections import Counter
 from datetime import datetime
 from io import BytesIO
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 import numpy as np
 import pytorch_lightning as pl
@@ -24,6 +33,8 @@ import torch.nn.functional as F
 from PIL import Image
 from sklearn.metrics import precision_recall_fscore_support
 
+from .config import DEFAULT_TAGGER, OUTPUT_DIR
+from .log import logger
 from .tagger.infer import Tagger
 
 
@@ -37,14 +48,27 @@ def _to_png_b64(img_chw_normalised: torch.Tensor):
 
 class DebugLogger(pl.Callback):
     """Args:
-        save_dir: where the JSON logs are written.
-        tagger:   optional `Tagger`; when given, each misclassified image is tagged.
+        save_dir:  run folder. Default: visiondev_runs/<timestamp>.
+        tagger:    "default" (bundled weights), a path to YOLO tagger weights, a `Tagger`, or None to skip tagging.
+        diagnose:  after training, run selection + VLM + report automatically (needs the `diagnosis` extra).
+        diagnosis: a `visiondev.pipeline.DiagnosisConfig` (VLM port/model, samples, ...). Defaults are used if None.
+
+    After training: `report_path` (report.md or None), `run_dir`.
     """
 
-    def __init__(self, save_dir: str = "outputs/logs", tagger: Optional[Tagger] = None):
+    def __init__(self, save_dir: Optional[Union[str, Path]] = None, tagger: Union[str, Path, Tagger, None] = "default",
+                 diagnose: bool = False, diagnosis=None):
         super().__init__()
-        self.save_dir, self.tagger = save_dir, tagger
-        os.makedirs(save_dir, exist_ok=True)
+        save_dir = save_dir or OUTPUT_DIR / datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.save_dir = str(save_dir)
+        self.run_dir = Path(save_dir)
+        if tagger == "default":
+            tagger = Tagger(str(DEFAULT_TAGGER))
+        elif isinstance(tagger, (str, Path)):
+            tagger = Tagger(str(tagger))
+        self.tagger = tagger
+        self.diagnose, self.diagnosis, self.report_path = diagnose, diagnosis, None
+        os.makedirs(self.save_dir, exist_ok=True)
         self.summary, self.classes = {}, {}
         self.epochs, self.batches, self.class_metrics = [], [], []
         self.grad_norms, self.lrs, self.epoch_times, self.input_stats = [], [], [], []
@@ -153,3 +177,16 @@ class DebugLogger(pl.Callback):
             json.dump({"source_log": log_path, "created_at": datetime.now().isoformat(),
                        "n_misclassified": len(samples), "misclassified_samples": samples}, f)
         print(f"saved {log_path}\nsaved {mc_path}")
+
+        from .selection.archetypes import extract_images  # failure images grouped by tag
+        try:
+            print("failure images grouped by tag in", extract_images(Path(mc_path)))
+        except Exception as exc:
+            logger.warning(f"could not group failure images: {exc}")
+        if self.diagnose:
+            try:
+                from .pipeline import diagnose  # heavy imports only when asked for
+                self.report_path = diagnose(self.run_dir, self.diagnosis)
+                print("diagnostic report:", self.report_path)
+            except Exception as exc:  # the training logs are already on disk; never lose them to a failed report
+                logger.error(f"diagnosis failed: {exc}. Re-run with: visiondev diagnose {self.run_dir}")

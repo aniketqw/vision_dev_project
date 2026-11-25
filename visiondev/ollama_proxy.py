@@ -1,10 +1,10 @@
 """Local adapter: OpenAI /v1/chat/completions + /health  ->  Ollama native /api/chat.
 
-Why: the VisionDev v3 pipeline speaks OpenAI-style to a vLLM server and polls /health.
+Why: the VisionDev diagnosis step speaks OpenAI-style to a vLLM server and polls /health.
 The A6000's Ollama has no /health and its /v1 route ignores num_ctx, so qwen2.5vl:7b
 fails to load at the default context. This proxy sets num_ctx per request.
 
-  python ollama_proxy.py --listen 8000 --upstream http://localhost:11435 --num-ctx 8192
+  visiondev-ollama-proxy --listen 8000 --upstream http://localhost:11435 --num-ctx 4096
 (upstream is an SSH tunnel: ssh -N -L 11435:localhost:11434 a6000)
 Plain-text and image requests only; no streaming, no tool calls (the pipeline uses neither).
 """
@@ -92,12 +92,17 @@ class H(BaseHTTPRequestHandler):
         print("proxy:", fmt % a, flush=True)
 
 
-if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
+def main():
+    global ARGS
+    ap = argparse.ArgumentParser(description="OpenAI-style endpoint in front of Ollama (sets num_ctx per request)")
     ap.add_argument("--listen", type=int, default=8000)
     ap.add_argument("--upstream", default="http://localhost:11435")
     ap.add_argument("--model", default="qwen2.5vl:7b")
-    ap.add_argument("--num-ctx", type=int, default=8192)
+    ap.add_argument("--num-ctx", type=int, default=4096)
     ap.add_argument("--timeout", type=int, default=600)
     ARGS = ap.parse_args()
     ThreadingHTTPServer(("127.0.0.1", ARGS.listen), H).serve_forever()
+
+
+if __name__ == "__main__":
+    main()

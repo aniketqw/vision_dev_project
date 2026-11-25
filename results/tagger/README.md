@@ -33,7 +33,7 @@ v2 changes:
 | `visiondev/tagger/evaluate.py` | the four tests below, for any tagger weights |
 | `visiondev/tagger/infer.py` | `Tagger` class used by the training callback and the pipeline |
 | `notebooks/tagger_v2.ipynb` | notebook with stored outputs |
-| `weights/tagger_v2.pt` | trained weights (5.3 MB) |
+| `visiondev/weights/tagger_v2.pt` | trained weights (5.3 MB) |
 | `results/tagger/` | `results.csv` (per-epoch), `eval_new.json`, `eval_old.json`, `train.log`, `dataset_stats.json` |
 
 ## How to run
@@ -44,7 +44,7 @@ From the repo root:
 python -m visiondev.tagger.make_dataset --cifar-root ./data --out outputs/tagger_dataset      # about 1 min
 PYTORCH_ENABLE_MPS_FALLBACK=1 python -m visiondev.tagger.train --data outputs/tagger_dataset/data.yaml --device mps --epochs 40
 python -m visiondev.tagger.evaluate --weights outputs/tagger_runs/tagger_v2/weights/best.pt --out outputs/eval_new.json \
-    --cnn-ckpt path/to/cnn.ckpt --misclassified outputs/logs/misclassified_<ts>.json
+    --predictions preds.npy --misclassified visiondev_runs/<run>/misclassified_<ts>.json
 ```
 
 The 40-epoch run takes about 40 min on Apple MPS when nothing else uses the GPU (the logged run took 98 min because other jobs shared it).
@@ -54,7 +54,7 @@ Inference on one image:
 
 ```python
 from visiondev.tagger.infer import Tagger
-tagger = Tagger()                  # loads weights/tagger_v2.pt
+tagger = Tagger()                  # loads the bundled weights
 tagger.tags(img_rgb)               # img_rgb: HxWx3 uint8 -> {"blur": 0.97} ; {} means no fault found
 ```
 

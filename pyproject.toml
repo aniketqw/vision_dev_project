@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "visiondev"
+version = "0.2.0"
+description = "Find out why an image classifier fails: distortion tagging, failure clustering and a VLM diagnostic report"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "torch", "torchvision", "pytorch-lightning", "ultralytics>=8.3",
+  "scikit-learn", "numpy", "matplotlib", "pillow", "opencv-python",
+]
+
+[project.optional-dependencies]
+diagnosis = ["langchain-openai", "langchain-core", "pydantic>=2"]   # VLM report
+tagger-dev = ["scipy", "pandas", "jupyter"]                          # retrain / evaluate the tagger, run the notebook
+
+[project.scripts]
+visiondev = "visiondev.cli:main"
+visiondev-ollama-proxy = "visiondev.ollama_proxy:main"
+
+[tool.setuptools.packages.find]
+include = ["visiondev*"]
+
+[tool.setuptools.package-data]
+visiondev = ["weights/*.pt"]

@@ -1,4 +1,12 @@
-"""The model being debugged: a small CIFAR-10 CNN plus its data loaders."""
+"""Example: train a small CIFAR-10 CNN with the VisionDev callback. The CNN is just a stand-in; use your own model.
+
+    pip install -e ".[diagnosis]"
+    python examples/cifar10_simplecnn.py --epochs 3 --diagnose            # needs a VLM endpoint on --port
+    python examples/cifar10_simplecnn.py --epochs 3 --diagnose --no-vlm   # statistics-only report
+
+Everything lands in visiondev_runs/<timestamp>/ , the deliverable being report.md.
+"""
+import argparse
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
@@ -53,3 +61,31 @@ def cifar10_loaders(root: str = "./data", batch_size: int = 32, num_workers: int
     val = datasets.CIFAR10(root, train=False, transform=tf, download=True)
     return (DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=num_workers),
             DataLoader(val, batch_size=batch_size, shuffle=False, num_workers=num_workers))
+
+
+def main():
+    import pytorch_lightning as pl
+
+    from visiondev import DebugLogger
+    from visiondev.pipeline import DiagnosisConfig
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--epochs", type=int, default=3)
+    ap.add_argument("--batch-size", type=int, default=32)
+    ap.add_argument("--cifar-root", default="./data")
+    ap.add_argument("--run-dir", default=None)
+    ap.add_argument("--diagnose", action="store_true", help="run selection + VLM + report after training")
+    ap.add_argument("--no-vlm", action="store_true")
+    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--model", default="Qwen/Qwen2.5-VL-7B-Instruct")
+    a = ap.parse_args()
+    train_loader, val_loader = cifar10_loaders(a.cifar_root, a.batch_size)
+    cfg = DiagnosisConfig(use_vlm=not a.no_vlm, vlm_port=a.port, vlm_model=a.model)
+    cb = DebugLogger(save_dir=a.run_dir, diagnose=a.diagnose, diagnosis=cfg)
+    pl.Trainer(max_epochs=a.epochs, callbacks=[cb], logger=False, default_root_dir=str(cb.run_dir)).fit(
+        SimpleCNN(), train_loader, val_loader)
+    print("report:", cb.report_path)
+
+
+if __name__ == "__main__":  # guard needed: DataLoader workers re-import this file on macOS
+    main()

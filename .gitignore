@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+visiondev_runs/
+*.egg-info/
+build/
+dist/

@@ -1,64 +1,104 @@
-# VisionDev v2: debug a vision model by tagging and explaining its failures
+# VisionDev
+
+Find out why an image classifier fails. Add one callback to your PyTorch Lightning training run. It tags every
+misclassified image with a distortion tagger, groups the failures by tag, picks representative images, asks a
+vision-language model about them and writes a diagnostic report.
+
+```python
+import pytorch_lightning as pl
+from visiondev import DebugLogger
+
+trainer = pl.Trainer(max_epochs=3, callbacks=[DebugLogger(diagnose=True)])
+trainer.fit(model, train_loader, val_loader)      # your model, your data
+# -> visiondev_runs/<timestamp>/report.md
+```
+
+## What happens
 
 ```
-CIFAR-10 CNN  ──►  failures tagged by a YOLO distortion tagger  ──►  3 typical + 3 outlier per tag
-  (model.py)        (callback.py + tagger/)                           (selection/: ResNet18 → PCA → t-SNE)
-                                                                              │
-                          diagnostic report  ◄──  VLM reads the images + stats (diagnosis/)
+training (your model)
+  └─ DebugLogger callback, every validation batch
+       ├─ logs metrics, per-class scores, gradient norm, learning rate
+       └─ tags each misclassified image: blur | noise | pixelate | jpeg | none     (visiondev/tagger)
+training ends
+  ├─ saves training_log_<ts>.json and misclassified_<ts>.json
+  ├─ stores the failure images grouped by tag:  misclassified_<ts>_images/<tag>/<hash>.png
+  └─ diagnose=True:
+       ├─ ResNet18 features → PCA(50) → t-SNE, per tag the 3 most typical + 3 outlier images   (visiondev/selection)
+       ├─ those images + failure statistics → vision-language model, with a verification step  (visiondev/diagnosis)
+       └─ report.md   ← the deliverable
 ```
 
-| step | what it does | code | script |
-|---|---|---|---|
-| 1 | Train the CNN. A Lightning callback logs metrics, and for every misclassified validation image stores the image and its distortion tags | `visiondev/model.py`, `visiondev/callback.py`, `visiondev/tagger/infer.py` | `scripts/01_train_cnn.py` |
-| 2 | Group failures by tag, embed with ResNet18 → PCA(50) → t-SNE, pick the 3 images nearest each tag's centroid (typical) and the 3 furthest (outlier) | `visiondev/selection/archetypes.py` | `scripts/02_select_archetypes.py` |
-| 3 | Send the picked images plus failure statistics to a vision-language model (observe → hypothesise → verify with stat tools → conclude), render a markdown report | `visiondev/diagnosis/*` | `scripts/03_diagnose.py` |
-| tagger | The distortion tagger: recipe, dataset, training, evaluation | `visiondev/tagger/*`, `notebooks/tagger_v2.ipynb`, `weights/tagger_v2.pt` | `python -m visiondev.tagger.<make_dataset\|train\|evaluate>` |
+The run folder (`visiondev_runs/<timestamp>/`) holds everything: `report.md`, the grouped images, `selection/tsne.png`
+(cluster map), `selection/distortion_report.json` (the picked images) and the JSON logs.
 
-## Run it
+## Install
 
 ```bash
-pip install -r requirements.txt
-python scripts/01_train_cnn.py --epochs 3          # outputs/logs/training_log_*.json + misclassified_*.json
-python scripts/02_select_archetypes.py             # outputs/reports/distortion_report.json + t-SNE plot
-python scripts/03_diagnose.py --no-vlm             # stats-only report; drop --no-vlm once a VLM is served
+pip install -e .                  # callback + tagger (weights are bundled in the package)
+pip install -e ".[diagnosis]"     # adds the VLM report step
 ```
 
-Step 3 talks to any OpenAI-compatible endpoint on `--port` (default 8000), e.g. vLLM. For Ollama
-(`qwen2.5vl:7b`), run `scripts/ollama_proxy.py`, which translates the OpenAI call to Ollama's native API and sets
-the context size Ollama otherwise ignores on `/v1`.
+`DebugLogger()` without `diagnose=True` needs only the base install: it still tags and groups the images.
+
+## Use
+
+Your batches must be `(images, labels)` with RGB images normalised to mean 0.5 / std 0.5 (the callback
+un-normalises them to save PNGs). A full runnable example with a small CIFAR-10 CNN is in
+[`examples/cifar10_simplecnn.py`](examples/cifar10_simplecnn.py).
+
+```python
+from visiondev import DebugLogger
+from visiondev.pipeline import DiagnosisConfig
+
+cb = DebugLogger(
+    save_dir="runs/exp1",                 # default: visiondev_runs/<timestamp>
+    tagger="default",                     # bundled weights | path to .pt | None to skip tagging
+    diagnose=True,
+    diagnosis=DiagnosisConfig(vlm_port=8000, vlm_model="Qwen/Qwen2.5-VL-7B-Instruct", samples=6),
+)
+```
+
+The VLM is any OpenAI-compatible endpoint at `http://localhost:<vlm_port>/v1` (for example vLLM). With Ollama, run
+`visiondev-ollama-proxy --upstream http://localhost:11434 --model qwen2.5vl:7b` first. If no endpoint answers, the
+report is still written with statistics only. If the report step fails, the training logs are already saved and
+`visiondev diagnose <run_dir>` re-runs it:
+
+```bash
+visiondev diagnose visiondev_runs/20260101_120000 --port 8000 --model Qwen/Qwen2.5-VL-7B-Instruct
+visiondev diagnose <run_dir> --no-vlm        # statistics only
+```
 
 ## The tagger: read this before trusting the tags
 
-The tagger itself is accurate (91-95% recall per distortion on held-out injected images, 97.6% of clean images left
-untagged) and generalises to a second injection recipe. Full results, how to run it and the notebook are in
-[`results/tagger/README.md`](results/tagger/README.md).
+The tagger is a YOLO11n detector, retrained for 32x32 images. It is accurate on injected faults (91-95% recall per
+distortion on held-out images, 97.6% of clean images left untagged) and generalises to a second injection recipe.
+Details, tests and how to retrain: [`results/tagger/README.md`](results/tagger/README.md) and
+[`notebooks/tagger_v2.ipynb`](notebooks/tagger_v2.ipynb).
 
-But on **natural** CIFAR-10 failures it says "none" for about 96% of images, and tagged failures are no more
-common than tagged correct images. So on clean data the four distortions mostly do not explain failures; those are
-mainly semantic confusion (cat/dog, truck/car), label noise and model capacity. The pipeline therefore keeps `none` as
-a first-class outcome (it is a cluster in step 2). Step 3 analyses all five buckets (blur, jpeg, pixelate, noise, none). The `none` bucket gets its own prompts, which ask about ambiguity, pose, crop, background and likely label problems instead of image degradation, and its own recommendation (audit labels and confusions, not augmentation). Each bucket sends 3 typical + 3 outlier images (`--samples 6`).
-
-## What is in and what was dropped
-
-Kept: the CNN, the callback (cleaned), the tagger (new), selection (ResNet18/PCA/t-SNE), the v3 diagnosis modules
-(RAG store, agent graph, schemas, tools, renderer), the Ollama adapter, and `rag_kb/` (15 fault→fix cards, a knowledge base
-for the planned fix-recommendation step; not wired into step 3 yet).
-
-Removed from this branch (still on `main`): the whole old `pipe/`, `exp/`, `downloadModel/`, logs and loose scripts. In particular dropped from `pipe/`: the v1 and v2 report generators (superseded by v3), the separate
-`export_misclassified.py` (the callback writes that file itself), the old DIV2K-trained `best.pt` tagger, duplicated
-initialisation blocks and dead code in the old logger, per-script `sys.path` hacks, and the old PCA-only cluster plot
-(replaced by step 2).
+On **natural** CIFAR-10 failures it answers "none" for about 96% of images, and tagged failures are no more common than
+tagged correct images. So on clean data the four distortions mostly do not explain failures; those are mainly
+semantic confusion (cat/dog, truck/car), label noise and model capacity. `none` is therefore a bucket of its own: it is
+clustered, sent to the VLM with prompts about ambiguity, pose, crop and likely label problems, and gets its own
+recommendation (audit labels and confusions, not augmentation).
 
 ## Layout
 
 ```
-visiondev/        model.py  callback.py  config.py  log.py
-  tagger/         recipe.py  make_dataset.py  train.py  evaluate.py  infer.py
-  selection/      archetypes.py
-  diagnosis/      data_loader  image_sampler  embeddings  rag  schemas  tools  chains  graph  renderer  server_utils
-scripts/          01_train_cnn.py  02_select_archetypes.py  03_diagnose.py  ollama_proxy.py
-notebooks/        tagger_v2.ipynb
-weights/          tagger_v2.pt
-results/tagger/   README.md  results.csv  eval_new.json  eval_old.json  train.log  dataset_stats.json  recipe_preview.png
-rag_kb/           fix_cards.jsonl  build_cards.py  README.md
+visiondev/
+  callback.py        DebugLogger: the entry point
+  pipeline.py        diagnose(): selection + VLM + report
+  cli.py             `visiondev diagnose`
+  config.py  log.py
+  tagger/            infer.py (Tagger) · recipe.py, make_dataset.py, train.py, evaluate.py (retrain and evaluate)
+  selection/         archetypes.py: group by tag, ResNet18 → PCA → t-SNE, typical + outlier
+  diagnosis/         VLM agent (observe → hypothesise → verify → conclude), tools, schemas, renderer, optional RAG memory
+  weights/           tagger_v2.pt (Git LFS)
+  ollama_proxy.py    OpenAI-style endpoint in front of Ollama
+examples/            cifar10_simplecnn.py
+notebooks/           tagger_v2.ipynb (executed, outputs stored)
+results/tagger/      tagger results, training curves, logs
+rag_kb/              15 fault → fix cards for the planned fix-recommendation step (not wired in yet)
 ```
+
+`visiondev/weights/tagger_v2.pt` is stored with Git LFS; install `git-lfs` before cloning, or the file will be a small pointer.
