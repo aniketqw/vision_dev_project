@@ -1,41 +1,6 @@
-# Python
+outputs/
+data/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-env/
-venv*/
-
-# Data and checkpoints
-/data/
-/checkpoints/
-/logs/
-
-# Downloaded models / datasets
-/downloadModel/
-/exp/helperFunc/data/
-
-# Training logs / outputs
-/pipe/logs/*
-!/pipe/logs/*.json
-!/pipe/logs/*.png
-!/pipe/logs/*_images/
-!/pipe/logs/*_images/**
-
-# Intermediate outputs
-/pipe/checkpoints/
-/pipe/data/
-
-# VSCode
-.vscode/
-
-# Jupyter
 .ipynb_checkpoints/
-
-# OS
 .DS_Store
-
-# Temporary files
-*.tmp
-*.swp
-*.swo
