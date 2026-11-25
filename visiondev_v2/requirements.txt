@@ -1,0 +1,17 @@
+torch
+torchvision
+pytorch-lightning
+ultralytics>=8.3
+scikit-learn
+numpy
+pandas
+matplotlib
+pillow
+opencv-python
+scipy
+# diagnosis step (VLM via an OpenAI-compatible endpoint)
+langchain-openai
+langchain-core
+pydantic>=2
+# notebook
+jupyter

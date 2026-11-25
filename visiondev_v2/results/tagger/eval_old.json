@@ -1,0 +1,108 @@
+{
+ "name": "old",
+ "conf": 0.25,
+ "imgsz": null,
+ "A_heldout_recipe": {
+  "n": 1000,
+  "per_fault": {
+   "blur": {
+    "precision": 0.571,
+    "recall": 0.014,
+    "f1": 0.027
+   },
+   "noise": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+   },
+   "pixelate": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+   },
+   "jpeg": {
+    "precision": 0.242,
+    "recall": 0.029,
+    "f1": 0.051
+   }
+  },
+  "clean_specificity(no detection)": 0.988,
+  "exact_set_match": {
+   "single": 0.011,
+   "mixed": 0.0
+  },
+  "n_clean_single_mixed": [
+   252,
+   446,
+   302
+  ]
+ },
+ "B_dose_response": {
+  "blur@3": {
+   "recall": 0.0,
+   "none": 1.0,
+   "only_correct_tag": 0.0,
+   "tag_counts": {}
+  },
+  "noise@3": {
+   "recall": 0.0,
+   "none": 0.99,
+   "only_correct_tag": 0.0,
+   "tag_counts": {
+    "jpeg": 2
+   }
+  },
+  "jpeg@3": {
+   "recall": 0.02,
+   "none": 0.975,
+   "only_correct_tag": 0.02,
+   "tag_counts": {
+    "jpeg": 4,
+    "blur": 1
+   }
+  },
+  "pixelate@3": {
+   "recall": 0.0,
+   "none": 0.85,
+   "only_correct_tag": 0.0,
+   "tag_counts": {
+    "jpeg": 30
+   }
+  }
+ },
+ "C_failed_vs_correct": {
+  "n_per_group": 1500,
+  "tags": {
+   "blur": {
+    "failed_rate": 0.001,
+    "correct_rate": 0.003,
+    "lift": 0.25,
+    "p_value": 0.3707
+   },
+   "noise": {
+    "failed_rate": 0.0,
+    "correct_rate": 0.0,
+    "lift": null,
+    "p_value": 1.0
+   },
+   "pixelate": {
+    "failed_rate": 0.0,
+    "correct_rate": 0.0,
+    "lift": null,
+    "p_value": 1.0
+   },
+   "jpeg": {
+    "failed_rate": 0.003,
+    "correct_rate": 0.007,
+    "lift": 0.5,
+    "p_value": 0.3005
+   },
+   "none": {
+    "failed_rate": 0.996,
+    "correct_rate": 0.991,
+    "lift": 1.005,
+    "p_value": 0.1163
+   }
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "train": {
+  "images": 24000,
+  "clean": 5941,
+  "has_blur": 6719,
+  "has_noise": 6627,
+  "has_pixelate": 6575,
+  "has_jpeg": 6635,
+  "boxes": 26556
+ },
+ "val": {
+  "images": 3000,
+  "clean": 771,
+  "has_blur": 800,
+  "has_noise": 828,
+  "has_pixelate": 865,
+  "has_jpeg": 781,
+  "boxes": 3274
+ }
+}
