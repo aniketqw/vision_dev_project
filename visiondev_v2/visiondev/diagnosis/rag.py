@@ -31,7 +31,7 @@ from typing import Dict, List, Optional
 import numpy as np
 
 from ..config import (
-    CIFAR10_CLASSES, DISTORTION_TYPES,
+    CIFAR10_CLASSES, DISTORTION_TYPES, ANALYSIS_TYPES,
     RAG_TOP_K, RAG_SIMILARITY_THRESHOLD,
 )
 from .embeddings import extract_embedding_b64, cosine_similarity, top_k_indices

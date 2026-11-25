@@ -18,7 +18,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from ..config import CIFAR10_CLASSES, DISTORTION_TYPES
+from ..config import CIFAR10_CLASSES, ANALYSIS_TYPES
 
 
 # ── file discovery ─────────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ def load_misclassified_stats(mc_path: Path) -> Dict:
         "top_confusion_pairs":  [],
     }
 
-    for dt in DISTORTION_TYPES + ["unknown"]:
+    for dt in ANALYSIS_TYPES + ["unknown"]:
         group = by_dist.get(dt, [])
         if not group:
             continue

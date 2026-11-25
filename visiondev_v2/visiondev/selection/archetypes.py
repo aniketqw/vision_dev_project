@@ -28,10 +28,10 @@ from PIL import Image
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
-from ..config import DISTORTION_TYPES
+from ..config import ANALYSIS_TYPES
 from ..log import logger
 
-CATEGORIES = DISTORTION_TYPES + ["none"]  # "none" = the tagger found no fault (most natural failures)
+CATEGORIES = ANALYSIS_TYPES  # four distortions + "none" (tagger found no fault)
 
 
 def extract_images(mc_json: Path, categories=CATEGORIES) -> Path:

@@ -30,7 +30,7 @@ from langchain_core.output_parsers import StrOutputParser
 from ..config import (
     DEFAULT_MODEL, DEFAULT_PORT,
     LLM_TEMPERATURE, LLM_MAX_TOKENS, LLM_MAX_TOKENS_REC,
-    CIFAR10_CLASSES,
+    CIFAR10_CLASSES, NONE_TAG,
 )
 
 
@@ -98,10 +98,12 @@ def _image_metadata_str(items: List[Dict]) -> str:
                                         str(meta.get("predicted_label", "?")))
         conf     = meta.get("distortion_confidence") or 0.0
         role     = item.get("role", "random")
+        tag_info = (f"distortion confidence = {conf:.4f}" if conf
+                    else "no distortion detected by the tagger")
         lines.append(
             f"  Image {i} ({role}):  "
             f"true = {true_lbl}  |  predicted (wrong) = {pred_lbl}  "
-            f"|  distortion confidence = {conf:.4f}"
+            f"|  {tag_info}"
         )
     return "\n".join(lines)
 
@@ -139,9 +141,42 @@ Finally:
 """
 
 
+_NONE_TURN1_PROMPT = """\
+You are an expert computer vision analyst.
+
+You are given {n_images} CIFAR-10 image(s), each 32×32 pixels. A distortion tagger \
+checked them for blur, noise, pixelation and JPEG artifacts and found NONE. These \
+images were still misclassified by a neural network, so the cause is probably not image \
+degradation. Study every image carefully — at this resolution every pixel cluster matters.
+
+IMAGE ROLES:
+{image_roles}
+  (typical = near cluster centroid — representative sample)
+  (outlier  = far from centroid   — unusual/edge-case sample)
+
+━━━ YOUR TASK — visual observation only, NO class guessing ━━━
+Do NOT name or guess object classes. Purely describe what you see.
+
+For EACH image (label them Image 1, Image 2 …):
+
+  QUALITY CHECK: Does the image look clean, or is there any subtle degradation \
+(slight blur, low contrast, odd colours) the tagger could have missed?
+
+  CONTENT: Describe the object's outline, size in the frame, pose or viewpoint, \
+cropping or occlusion, and the background (plain, cluttered, similar colour to the object).
+
+  AMBIGUITY: What makes the object hard to recognise — unusual angle, small size, \
+camouflage, shapes shared with other categories?
+
+Finally:
+  COMMON PATTERN: What single visual element is present across ALL {n_images} image(s)?\
+"""
+
+
 def build_turn1_message(items: List[Dict], dist_type: str) -> List[HumanMessage]:
     """Construct the Turn 1 HumanMessage: text (no labels) + all images."""
-    text = _TURN1_PROMPT.format(
+    template = _NONE_TURN1_PROMPT if dist_type == NONE_TAG else _TURN1_PROMPT
+    text = template.format(
         n_images        = len(items),
         distortion_type = dist_type,
         image_roles     = _image_roles_str(items),
@@ -177,6 +212,30 @@ context above — answer the five structured sections below.
 """
 
 
+_NONE_TURN2_PROMPT = """\
+You are an expert computer vision failure analyst.
+
+━━━ STEP 1 — YOUR PRIOR VISUAL OBSERVATIONS ━━━
+{turn1_output}
+
+{rag_context}
+
+{tool_results_block}
+
+━━━ GROUND TRUTH LABELS (now revealed) ━━━
+{image_metadata}
+
+These {n_images} CIFAR-10 image(s) were MISCLASSIFIED by a neural network, and a \
+distortion tagger found no blur, noise, pixelation or JPEG artifacts in them. Decide why \
+the model failed: visual ambiguity between classes, unusual pose or crop, cluttered \
+background, a likely wrong label, or model capacity. Use your Step 1 observations — and any \
+historical context above — to answer the structured sections below. Say plainly if the \
+cause cannot be determined from the images.
+
+{format_instructions}\
+"""
+
+
 def build_turn2_message(
     items:               List[Dict],
     dist_type:           str,
@@ -200,7 +259,8 @@ def build_turn2_message(
     else:
         tool_block = ""
 
-    text = _TURN2_PROMPT.format(
+    template = _NONE_TURN2_PROMPT if dist_type == NONE_TAG else _TURN2_PROMPT
+    text = template.format(
         turn1_output        = turn1_output.strip(),
         rag_context         = rag_context,
         tool_results_block  = tool_block,

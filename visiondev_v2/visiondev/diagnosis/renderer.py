@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 
 from langchain_core.output_parsers import StrOutputParser
 
-from ..config import CIFAR10_CLASSES, DISTORTION_TYPES
+from ..config import ANALYSIS_TYPES, CIFAR10_CLASSES, DISTORTION_TYPES, NONE_TAG
 from .chains import build_rec_llm, build_recommendations_message
 from .schemas import RecommendationList, get_rec_parser
 from .graph import AnalysisState
@@ -110,6 +110,20 @@ def _fallback_recommendations(mc_stats: Dict) -> List[Dict]:
             "impact_estimate": f"~{min(pct * 0.6, 40):.0f}% reduction in {dt} failures",
         })
 
+    none_n = by_dist.get(NONE_TAG, {}).get("count", 0)
+    if none_n:
+        pct = round(none_n / total * 100, 1)
+        recs.append({
+            "priority":       "HIGH" if pct > 50 else "MEDIUM",
+            "title":          "Audit the failures with no detected distortion (labels, ambiguity, capacity)",
+            "description":    (
+                f"{pct}% of failures ({none_n} images) carry no distortion, so augmentation will not fix them. "
+                "Review the top confusion pairs for ambiguous or mislabeled images, then consider a higher-capacity "
+                "model, longer training, or more data for the confused classes."
+            ),
+            "addresses":      f"none ({pct}% of failures)",
+            "impact_estimate": "depends on how many are label noise versus model capacity",
+        })
     recs.append({
         "priority":       "MEDIUM",
         "title":          "Train longer with cosine LR decay",
@@ -207,7 +221,7 @@ def render_report(
         "| Distortion | Failures | % of Total | Avg Distortion Confidence |",
         "|------------|---------|------------|--------------------------|",
     ]
-    for dt in DISTORTION_TYPES + ["unknown"]:
+    for dt in ANALYSIS_TYPES + ["unknown"]:
         d = mc_stats["by_distortion"].get(dt)
         if not d:
             continue
@@ -239,13 +253,13 @@ def render_report(
 
     blind_spot_summaries = []
 
-    for dt in DISTORTION_TYPES:
+    for dt in ANALYSIS_TYPES:
         d     = mc_stats["by_distortion"].get(dt)
         state = per_type_states.get(dt)
         pct   = (d["count"] / total_mc * 100) if (d and total_mc) else 0
 
         lines += [
-            f"### 4.{DISTORTION_TYPES.index(dt)+1}  {dt.capitalize()} "
+            f"### 4.{ANALYSIS_TYPES.index(dt)+1}  {dt.capitalize()} "
             f"— {d['count'] if d else 0} failures ({pct:.1f}%)",
             "",
         ]

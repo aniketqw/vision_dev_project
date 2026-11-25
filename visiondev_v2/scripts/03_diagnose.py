@@ -52,7 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from visiondev.log import logger
 from visiondev.config import (
     DEFAULT_LOGS_DIR, DEFAULT_REPORTS_DIR, DEFAULT_RAG_INDEX,
-    DEFAULT_MODEL, DEFAULT_PORT, DISTORTION_TYPES,
+    DEFAULT_MODEL, DEFAULT_PORT, ANALYSIS_TYPES,
 )
 from visiondev.diagnosis.data_loader import (
     find_latest_file,
@@ -82,8 +82,8 @@ def parse_args():
                    default=DEFAULT_REPORTS_DIR / "distortion_report.json")
     p.add_argument("--output",        type=Path,
                    default=Path("outputs") / "ai_reasoning_summary.md")
-    p.add_argument("--samples",       type=int,  default=3,
-                   help="Images per distortion type (default: 3)")
+    p.add_argument("--samples",       type=int,  default=6,
+                   help="Images per bucket: 3 typical then 3 outlier (default: 6)")
     p.add_argument("--training-log",  type=Path, default=None)
     p.add_argument("--misclassified", type=Path, default=None)
     p.add_argument("--port",          type=int,  default=DEFAULT_PORT)
@@ -180,7 +180,7 @@ def main():
     per_type_states: dict = {}
     total_vlm_calls = 0
 
-    for dt in DISTORTION_TYPES:
+    for dt in ANALYSIS_TYPES:
         print(f"{'─'*50}\n🔍 Distortion: {dt.upper()}")
         logger.info(f"Distortion: {dt.upper()}")
 

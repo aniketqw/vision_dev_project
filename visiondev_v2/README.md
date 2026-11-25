@@ -36,7 +36,7 @@ untagged) and generalises to a second injection recipe. Full results, how to run
 But on **natural** CIFAR-10 failures it says "none" for about 96% of images, and tagged failures are no more
 common than tagged correct images. So on clean data the four distortions mostly do not explain failures; those are
 mainly semantic confusion (cat/dog, truck/car), label noise and model capacity. The pipeline therefore keeps `none` as
-a first-class outcome (it is a cluster in step 2). Step 3 currently analyses the four distortion tags only.
+a first-class outcome (it is a cluster in step 2). Step 3 analyses all five buckets (blur, jpeg, pixelate, noise, none). The `none` bucket gets its own prompts, which ask about ambiguity, pose, crop, background and likely label problems instead of image degradation, and its own recommendation (audit labels and confusions, not augmentation). Each bucket sends 3 typical + 3 outlier images (`--samples 6`).
 
 ## What is in and what was dropped
 

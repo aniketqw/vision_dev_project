@@ -88,7 +88,12 @@ def get_epoch_trend(dist_type: str, mc_stats: Dict) -> Dict:
         first_epoch_pct = epoch_dist.get(epochs_sorted[0], 0) / total_dt * 100
         last_epoch_pct  = epoch_dist.get(epochs_sorted[-1], 0) / total_dt * 100
 
-        if first_epoch_pct > 70:
+        if dist_type == "none" and first_epoch_pct > 70:
+            interpretation = (
+                f"{first_epoch_pct:.0f}% of no-distortion failures are in epoch 0 — "
+                "the model is simply undertrained on these images; more training may help."
+            )
+        elif first_epoch_pct > 70:
             interpretation = (
                 f"{first_epoch_pct:.0f}% of {dist_type} failures in epoch 0 — "
                 "model never learned to handle this distortion type. "
@@ -146,7 +151,8 @@ def get_distortion_stats(dist_type: str, mc_stats: Dict) -> Dict:
             f"{dist_type.capitalize()} accounts for {pct}% of all failures "
             f"({count} images). Most commonly misclassified: {', '.join(top_true[:3])}. "
             f"Most common wrong predictions: {', '.join(top_pred[:3])}. "
-            f"Avg distortion classifier confidence: {avg_conf:.4f}."
+            + ("The tagger found no distortion in these images." if dist_type == "none"
+               else f"Avg distortion classifier confidence: {avg_conf:.4f}.")
         ),
     }
 

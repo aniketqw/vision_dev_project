@@ -32,7 +32,8 @@ class Turn2Analysis(BaseModel):
     """
     shared_failure_pattern: str = Field(
         description=(
-            "Which visual artifact is present in ALL images and most directly "
+            "Which visual artifact (or, when no distortion was detected, which content feature such as "
+            "pose, crop or background) is present in ALL images and most directly "
             "explains the wrong prediction. Must reference observations from Turn 1."
         )
     )
@@ -44,20 +45,21 @@ class Turn2Analysis(BaseModel):
     )
     what_misled_the_model: str = Field(
         description=(
-            "The exact degraded region or artifact pattern that activated the "
+            "The exact degraded region, artifact pattern or ambiguous feature that activated the "
             "wrong class. Why does it visually resemble the predicted class?"
         )
     )
     confidence_assessment: str = Field(
         description=(
-            "Whether the distortion looks obvious or subtle at 32×32 resolution. "
-            "Explanation of why the distortion confidence values are at the shown levels."
+            "Whether the distortion looks obvious or subtle at 32×32 resolution, or, when the tagger "
+            "found none, whether the images really look clean. Explain the tagger confidence shown."
         )
     )
     root_cause: str = Field(
         description=(
-            "ONE sentence only: the single core mechanism by which this distortion "
-            "type on these images triggers the specific wrong-class prediction."
+            "ONE sentence only: the single core mechanism by which this distortion type (or, for the "
+            "no-distortion group, this visual ambiguity or likely label problem) triggers the "
+            "specific wrong-class prediction."
         )
     )
     rag_novel_pattern: str = Field(

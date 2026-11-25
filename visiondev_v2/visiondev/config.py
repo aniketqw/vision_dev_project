@@ -11,6 +11,9 @@ TAGS = ["blur", "noise", "pixelate", "jpeg"]  # class order of the tagger (ids 0
 # ── dataset constants ─────────────────────────────────────────────────────────
 DISTORTION_TYPES = ["blur", "jpeg", "pixelate", "noise"]  # order used by selection and reports
 
+NONE_TAG = "none"  # the tagger found no distortion (about 96% of natural CIFAR-10 failures)
+ANALYSIS_TYPES = DISTORTION_TYPES + [NONE_TAG]  # buckets analysed by selection and diagnosis
+
 CIFAR10_CLASSES = {
     0: "airplane", 1: "automobile", 2: "bird",  3: "cat",
     4: "deer",     5: "dog",        6: "frog",  7: "horse",
